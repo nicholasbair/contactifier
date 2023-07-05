@@ -7,8 +7,10 @@ defmodule Contactifier.Integrations.Integration do
   schema "integrations" do
     field :name, :string
     field :scopes, {:array, :string}
-    field :state, :string
+    field :valid?, :boolean
     field :user_id, :binary_id
+    field :token, Contactifier.Encrypted.Binary
+    field :vendor_id, :string
 
     timestamps()
   end
@@ -16,7 +18,7 @@ defmodule Contactifier.Integrations.Integration do
   @doc false
   def changeset(integration, attrs) do
     integration
-    |> cast(attrs, [:name, :scopes, :state])
-    |> validate_required([:name, :scopes, :state])
+    |> cast(attrs, [:name, :scopes, :valid?, :user_id, :token, :vendor_id])
+    |> validate_required([:name, :scopes, :valid?, :user_id, :token, :vendor_id])
   end
 end

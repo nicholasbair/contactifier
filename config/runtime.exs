@@ -20,6 +20,17 @@ if System.get_env("PHX_SERVER") do
   config :contactifier, ContactifierWeb.Endpoint, server: true
 end
 
+cloak_key =
+  System.get_env("CLOAK_KEY") ||
+    raise """
+    environment variable CLOAK_KEY is missing.
+    """
+
+config :contactifier, Contactifier.Vault,
+  ciphers: [
+    default: {Cloak.Ciphers.AES.GCM, tag: "AES.GCM.V1", key: Base.decode64!(cloak_key)}
+  ]
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

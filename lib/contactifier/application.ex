@@ -17,7 +17,9 @@ defmodule Contactifier.Application do
       # Start Finch
       {Finch, name: Contactifier.Finch},
       # Start the Endpoint (http/https)
-      ContactifierWeb.Endpoint
+      ContactifierWeb.Endpoint,
+      Contactifier.Vault,
+      {Oban, Application.fetch_env!(:contactifier, Oban)}
       # Start a worker by calling: Contactifier.Worker.start_link(arg)
       # {Contactifier.Worker, arg}
     ]

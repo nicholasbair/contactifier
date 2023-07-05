@@ -37,6 +37,12 @@ defmodule Contactifier.Contacts do
   """
   def get_contact!(id), do: Repo.get!(Contact, id)
 
+  def get_contact(id) do
+    Contact
+    |> Repo.get(id)
+    |> Repo.normalize_one()
+  end
+
   @doc """
   Creates a contact.
 
