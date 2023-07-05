@@ -30,6 +30,11 @@ config :contactifier, ContactifierWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :contactifier, Contactifier.Mailer, adapter: Swoosh.Adapters.Local
 
+config :contactifier, Oban,
+  repo: Contactifier.Repo,
+  plugins: [{Oban.Plugins.Pruner, max_age: 300}],
+  queues: [contacts: 2]
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",

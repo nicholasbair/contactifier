@@ -10,6 +10,8 @@ defmodule Contactifier.Contacts.Contact do
     field :last_name, :string
     field :role, :string
     field :customer_id, :binary_id
+    field :vendor_id, :string
+    field :skipped?, :boolean, default: false
 
     timestamps()
   end
@@ -18,6 +20,6 @@ defmodule Contactifier.Contacts.Contact do
   def changeset(contact, attrs) do
     contact
     |> cast(attrs, [:email, :first_name, :last_name, :role])
-    |> validate_required([:email, :first_name, :last_name, :role])
+    |> validate_required([:email, :first_name, :last_name, :vendor_id])
   end
 end

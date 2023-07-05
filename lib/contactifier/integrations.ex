@@ -37,6 +37,11 @@ defmodule Contactifier.Integrations do
   """
   def get_integration!(id), do: Repo.get!(Integration, id)
 
+  def get_integration_by_vendor_id(vendor_id) do
+    Repo.get_by!(Integration, vendor_id: vendor_id)
+    |> Repo.normalize_one()
+  end
+
   @doc """
   Creates a integration.
 
