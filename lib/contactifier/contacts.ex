@@ -43,6 +43,15 @@ defmodule Contactifier.Contacts do
     |> Repo.normalize_one()
   end
 
+  def get_contact_by_vendor_id(val) when is_nil(val) do
+    Repo.normalize_one(val)
+  end
+
+  def get_contact_by_vendor_id(vendor_id) do
+    Repo.get_by(Contact, vendor_id: vendor_id)
+    |> Repo.normalize_one()
+  end
+
   @doc """
   Creates a contact.
 
