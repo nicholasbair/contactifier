@@ -21,6 +21,11 @@ defmodule Contactifier.Contacts do
     Repo.all(Contact)
   end
 
+  def list_parsed_contacts do
+    query = from c in Contact, where: is_nil(c.customer_id)
+    Repo.all(query)
+  end
+
   @doc """
   Gets a single contact.
 

@@ -23,6 +23,7 @@ defmodule ContactifierWeb.ContactLive.FormComponent do
         <.input field={@form[:first_name]} type="text" label="First name" />
         <.input field={@form[:last_name]} type="text" label="Last name" />
         <.input field={@form[:role]} type="text" label="Role" />
+        <.input field={@form[:customer_id]} type="text" label="Customer ID" required />
         <:actions>
           <.button phx-disable-with="Saving...">Save Contact</.button>
         </:actions>

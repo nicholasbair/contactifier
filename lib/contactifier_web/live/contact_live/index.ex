@@ -6,7 +6,7 @@ defmodule ContactifierWeb.ContactLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :contacts, Contacts.list_contacts())}
+    {:ok, stream(socket, :contacts, Contacts.list_parsed_contacts())}
   end
 
   @impl true
@@ -16,7 +16,7 @@ defmodule ContactifierWeb.ContactLive.Index do
 
   defp apply_action(socket, :edit, %{"id" => id}) do
     socket
-    |> assign(:page_title, "Edit Contact")
+    |> assign(:page_title, "Assign Contact")
     |> assign(:contact, Contacts.get_contact!(id))
   end
 
@@ -28,7 +28,7 @@ defmodule ContactifierWeb.ContactLive.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Contacts")
+    |> assign(:page_title, "Unassigned Contacts")
     |> assign(:contact, nil)
   end
 
