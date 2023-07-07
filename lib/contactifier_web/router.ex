@@ -76,9 +76,7 @@ defmodule ContactifierWeb.Router do
 
       live "/integrations", IntegrationLive.Index, :index
       live "/integrations/new", IntegrationLive.Index, :new
-      live "/integrations/:id/edit", IntegrationLive.Index, :edit
       live "/integrations/:id", IntegrationLive.Show, :show
-      live "/integrations/:id/show/edit", IntegrationLive.Show, :edit
 
       live "/customers", CustomerLive.Index, :index
       live "/customers/new", CustomerLive.Index, :new

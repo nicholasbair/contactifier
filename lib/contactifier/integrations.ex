@@ -22,6 +22,19 @@ defmodule Contactifier.Integrations do
   end
 
   @doc """
+  Returns the list of integrations for a given user.
+
+  ## Examples
+
+      iex> list_integrations_for_user(user_id)
+      [%Integration{}, ...]
+
+  """
+  def list_integrations_for_user(user_id) do
+    Repo.all(from i in Integration, where: i.user_id == ^user_id)
+  end
+
+  @doc """
   Gets a single integration.
 
   Raises `Ecto.NoResultsError` if the Integration does not exist.
@@ -36,6 +49,24 @@ defmodule Contactifier.Integrations do
 
   """
   def get_integration!(id), do: Repo.get!(Integration, id)
+
+  @doc """
+  Gets a single integration with for the given user_id and integration_id.
+
+  Raises `Ecto.NoResultsError` if the Integration does not exist.
+
+  ## Examples
+
+      iex> get_integration_for_user!(123, 456)
+      %Integration{}
+
+      iex> get_integration_for_user!(456, 789)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_integration_for_user!(user_id, integration_id) do
+    Repo.get_by!(Integration, user_id: user_id, id: integration_id)
+  end
 
   @doc """
   Gets a single valid integration.
