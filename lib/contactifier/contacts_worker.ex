@@ -7,7 +7,7 @@ defmodule Contactifier.Contacts.Worker do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"id" => id, "account_id" => account_id} = _args}) do
-    with {:error, :not_found} <- Contactifier.Contacts.get_contact(id),
+    with {:error, :not_found} <- Contactifier.Contacts.get_contact_by_vendor_id(id),
       {:ok, integration} <- Contactifier.Integrations.get_integration_by_vendor_id(account_id),
       {:ok, %{source: "inbox"} = contact} <- ExNylas.Contacts.find(%ExNylas.Connection{access_token: integration.token}, id) do
 
@@ -17,9 +17,9 @@ defmodule Contactifier.Contacts.Worker do
           |> List.first
           |> Map.get(:email)
 
-        Logger.info("Creating contact with email #{email} for vendor_id #{account_id}")
-
-        Contactifier.Contacts.create_contact(%{vendor_id: id, email: email})
+        with {:ok, _contact} <- Contactifier.Contacts.create_contact(%{vendor_id: id, email: email}) do
+          Logger.info("Created contact with email #{email} for vendor_id #{account_id}")
+        end
     end
   end
 end

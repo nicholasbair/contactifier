@@ -19,7 +19,7 @@ defmodule Contactifier.Contacts.Contact do
   @doc false
   def changeset(contact, attrs) do
     contact
-    |> cast(attrs, [:email, :first_name, :last_name, :role])
-    |> validate_required([:email, :first_name, :last_name, :vendor_id])
+    |> cast(attrs, [:email, :first_name, :last_name, :role, :customer_id, :vendor_id, :skipped?])
+    |> validate_required([:email, :vendor_id])
   end
 end
