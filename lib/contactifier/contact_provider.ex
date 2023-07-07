@@ -57,7 +57,7 @@ defmodule Contactifier.Integrations.ContactProvider do
   """
   def connection_with_token(%{token: token} = _integration) do
     %ExNylas.Connection{
-      api_server: Application.get_env(:contactifier, __MODULE__)[:api_server],
+      api_server: Application.get_env(:contactifier, :nylas_api_server),
       access_token: token
     }
   end
