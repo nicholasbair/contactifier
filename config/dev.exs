@@ -30,8 +30,8 @@ config :contactifier, ContactifierWeb.Endpoint,
   ]
 
 config :contactifier,
-  redirect_uri: "http://localhost:4000/integrations/callback",
-  api_server: "https://api.nylas.com"
+  nylas_redirect_uri: "http://localhost:4000/integrations/callback",
+  nylas_api_server: "https://api.nylas.com"
 
 # ## SSL Support
 #

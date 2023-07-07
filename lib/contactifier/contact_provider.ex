@@ -15,7 +15,7 @@ defmodule Contactifier.Integrations.ContactProvider do
     __MODULE__.connection()
     |> ExNylas.Authentication.Hosted.get_auth_url(
       %{
-        redirect_uri: Application.get_env(:contactifier, :redirect_uri),
+        redirect_uri: Application.get_env(:contactifier, :nylas_redirect_uri),
         scopes: ["email.read_only", "contacts.read_only"],
         response_type: "code"
       }
@@ -36,9 +36,9 @@ defmodule Contactifier.Integrations.ContactProvider do
   """
   def connection() do
     %ExNylas.Connection{
-      api_server: Application.get_env(:contactifier, :api_server),
-      client_id: Application.get_env(:contactifier, :client_id),
-      client_secret: Application.get_env(:contactifier, :client_secret),
+      api_server: Application.get_env(:contactifier, :nylas_api_server),
+      client_id: Application.get_env(:contactifier, :nylas_client_id),
+      client_secret: Application.get_env(:contactifier, :nylas_client_secret),
     }
   end
 

@@ -44,8 +44,8 @@ nylas_client_secret =
     """
 
 config :contactifier,
-  client_id: nylas_client_id,
-  client_secret: nylas_client_secret
+  nylas_client_id: nylas_client_id,
+  nylas_client_secret: nylas_client_secret
 
 if config_env() == :prod do
   database_url =

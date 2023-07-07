@@ -18,8 +18,8 @@ config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Contactifier.Fin
 config :logger, level: :info
 
 config :contactifier,
-  redirect_uri: "https://contactifier.fly.dev/integrations/callback",
-  api_server: "https://api.nylas.com"
+  nylas_redirect_uri: "https://contactifier.fly.dev/integrations/callback",
+  nylas_api_server: "https://api.nylas.com"
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
