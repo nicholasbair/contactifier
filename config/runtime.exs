@@ -31,6 +31,22 @@ config :contactifier, Contactifier.Vault,
     default: {Cloak.Ciphers.AES.GCM, tag: "AES.GCM.V1", key: Base.decode64!(cloak_key)}
   ]
 
+nylas_client_id =
+  System.get_env("NYLAS_CLIENT_ID") ||
+    raise """
+    environment variable NYLAS_CLIENT_ID is missing.
+    """
+
+nylas_client_secret =
+  System.get_env("NYLAS_CLIENT_SECRET") ||
+    raise """
+    environment variable NYLAS_CLIENT_SECRET is missing.
+    """
+
+config :contactifier,
+  client_id: nylas_client_id,
+  client_secret: nylas_client_secret
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

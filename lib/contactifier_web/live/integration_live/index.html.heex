@@ -14,7 +14,7 @@
 >
   <:col :let={{_id, integration}} label="Name"><%= integration.name %></:col>
   <:col :let={{_id, integration}} label="Scopes"><%= integration.scopes %></:col>
-  <:col :let={{_id, integration}} label="State"><%= integration.state %></:col>
+  <:col :let={{_id, integration}} label="State"><%= integration.valid? %></:col>
   <:action :let={{_id, integration}}>
     <div class="sr-only">
       <.link navigate={~p"/integrations/#{integration}"}>Show</.link>
@@ -31,7 +31,11 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="integration-modal" show on_cancel={JS.patch(~p"/integrations")}>
+<.modal :if={@live_action in [:new]} id="integration-modal" show on_cancel={JS.patch(~p"/integrations")}>
+  <a href={@auth_url}>Connect account</a>
+</.modal>
+
+<.modal :if={@live_action in [:edit]} id="integration-modal" show on_cancel={JS.patch(~p"/integrations")}>
   <.live_component
     module={ContactifierWeb.IntegrationLive.FormComponent}
     id={@integration.id || :new}

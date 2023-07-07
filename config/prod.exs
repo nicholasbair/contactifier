@@ -17,5 +17,9 @@ config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Contactifier.Fin
 # Do not print debug messages in production
 config :logger, level: :info
 
+config :contactifier,
+  redirect_uri: "https://contactifier.fly.dev/integrations/callback",
+  api_server: "https://api.nylas.com"
+
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
