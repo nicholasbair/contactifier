@@ -29,6 +29,10 @@ config :contactifier, ContactifierWeb.Endpoint,
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
+config :contactifier,
+  nylas_redirect_uri: "http://localhost:4000/integrations/callback",
+  nylas_api_server: "https://api.nylas.com"
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

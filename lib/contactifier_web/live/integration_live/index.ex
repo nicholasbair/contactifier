@@ -21,9 +21,12 @@ defmodule ContactifierWeb.IntegrationLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
+    {:ok, url} = Integrations.ContactProvider.auth_url()
+
     socket
     |> assign(:page_title, "New Integration")
     |> assign(:integration, %Integration{})
+    |> assign(:auth_url, url)
   end
 
   defp apply_action(socket, :index, _params) do

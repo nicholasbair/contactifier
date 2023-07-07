@@ -67,10 +67,30 @@ defmodule ContactifierWeb.Router do
   scope "/", ContactifierWeb do
     pipe_through [:browser, :require_authenticated_user]
 
+    get "/integrations/callback", IntegrationController, :callback
+
     live_session :require_authenticated_user,
       on_mount: [{ContactifierWeb.UserAuth, :ensure_authenticated}] do
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+
+      live "/integrations", IntegrationLive.Index, :index
+      live "/integrations/new", IntegrationLive.Index, :new
+      live "/integrations/:id/edit", IntegrationLive.Index, :edit
+      live "/integrations/:id", IntegrationLive.Show, :show
+      live "/integrations/:id/show/edit", IntegrationLive.Show, :edit
+
+      live "/customers", CustomerLive.Index, :index
+      live "/customers/new", CustomerLive.Index, :new
+      live "/customers/:id/edit", CustomerLive.Index, :edit
+      live "/customers/:id", CustomerLive.Show, :show
+      live "/customers/:id/show/edit", CustomerLive.Show, :edit
+
+      live "/contacts", ContactLive.Index, :index
+      live "/contacts/new", ContactLive.Index, :new
+      live "/contacts/:id/edit", ContactLive.Index, :edit
+      live "/contacts/:id", ContactLive.Show, :show
+      live "/contacts/:id/show/edit", ContactLive.Show, :edit
     end
   end
 
