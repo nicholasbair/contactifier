@@ -35,7 +35,10 @@ defmodule Contactifier.Customers do
       ** (Ecto.NoResultsError)
 
   """
-  def get_customer!(id), do: Repo.get!(Customer, id)
+  def get_customer!(id) do
+    Repo.get!(Customer, id)
+    |> Repo.preload(:contacts)
+  end
 
   @doc """
   Creates a customer.

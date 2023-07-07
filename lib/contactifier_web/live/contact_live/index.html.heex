@@ -1,5 +1,5 @@
 <.header>
-  Listing Contacts
+  Unassigned Contacts
   <:actions>
     <.link patch={~p"/contacts/new"}>
       <.button>New Contact</.button>
@@ -20,7 +20,7 @@
     <div class="sr-only">
       <.link navigate={~p"/contacts/#{contact}"}>Show</.link>
     </div>
-    <.link patch={~p"/contacts/#{contact}/edit"}>Edit</.link>
+    <.link patch={~p"/contacts/#{contact}/edit"}>Assign</.link>
   </:action>
   <:action :let={{id, contact}}>
     <.link

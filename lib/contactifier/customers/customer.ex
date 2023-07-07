@@ -10,6 +10,8 @@ defmodule Contactifier.Customers.Customer do
     field :name, :string
     field :use_case, :string
 
+    has_many :contacts, Contactifier.Contacts.Contact
+
     timestamps()
   end
 

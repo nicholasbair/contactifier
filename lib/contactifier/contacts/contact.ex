@@ -11,7 +11,6 @@ defmodule Contactifier.Contacts.Contact do
     field :role, :string
     field :customer_id, :binary_id
     field :vendor_id, :string
-    field :skipped?, :boolean, default: false
 
     timestamps()
   end
@@ -19,7 +18,7 @@ defmodule Contactifier.Contacts.Contact do
   @doc false
   def changeset(contact, attrs) do
     contact
-    |> cast(attrs, [:email, :first_name, :last_name, :role, :customer_id, :vendor_id, :skipped?])
+    |> cast(attrs, [:email, :first_name, :last_name, :role, :customer_id, :vendor_id])
     |> validate_required([:email, :vendor_id])
   end
 end
