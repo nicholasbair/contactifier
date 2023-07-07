@@ -22,6 +22,18 @@ defmodule Contactifier.Integrations.ContactProvider do
     )
   end
 
+  def auth_url(email) do
+    __MODULE__.connection()
+    |> ExNylas.Authentication.Hosted.get_auth_url(
+      %{
+        redirect_uri: Application.get_env(:contactifier, :nylas_redirect_uri),
+        scopes: ["email.read_only", "contacts.read_only"],
+        response_type: "code",
+        login_hint: email
+      }
+    )
+  end
+
   @doc """
   Returns the connection for the Nylas integration.
 
@@ -84,14 +96,30 @@ defmodule Contactifier.Integrations.ContactProvider do
 
   ## Examples
 
-      iex> revoke_all_except(%{token: "abcd"})
+      iex> revoke_all_except(integration)
       {:ok, %{success: true}}
 
-      iex> revoke_all_except(%{token: "abcd"})
+      iex> revoke_all_except(integration)
       {:error, reason}
   """
-  def revoke_all_except(%{token: token} = _integration) do
+  def revoke_all_except(%{token: token, vendor_id: id} = _integration) do
     connection()
-    |> ExNylas.Authentication.revoke_all(token)
+    |> ExNylas.Authentication.revoke_all(id, token)
+  end
+
+  @doc """
+  Revokes all tokens.
+
+  ## Examples
+
+      iex> revoke_all(integration)
+      {:ok, %{success: true}}
+
+      iex> revoke_all(integration)
+      {:error, reason}
+  """
+  def revoke_all(%{vendor_id: id} = _integration) do
+    connection()
+    |> ExNylas.Authentication.revoke_all(id)
   end
 end

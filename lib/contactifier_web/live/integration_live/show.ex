@@ -16,6 +16,14 @@ defmodule ContactifierWeb.IntegrationLive.Show do
      |> assign(:integration, Integrations.get_integration!(id))}
   end
 
+  @impl true
+  def handle_event("start_reauth", %{"id" => id}, socket) do
+    integration = Integrations.get_integration_for_user!(socket.assigns.current_user.id, id)
+    {:ok, url} = Integrations.ContactProvider.auth_url(integration.email_address)
+
+    {:noreply, redirect(socket, external: url)}
+  end
+
   defp page_title(:show), do: "Show Integration"
   defp page_title(:edit), do: "Edit Integration"
 end
