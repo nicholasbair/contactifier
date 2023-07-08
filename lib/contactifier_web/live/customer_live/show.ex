@@ -10,10 +10,17 @@ defmodule ContactifierWeb.CustomerLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    customer = Customers.get_customer!(id)
+
+    contacts =
+      customer.contacts
+      |> Enum.map(fn c -> {c.id, c} end)
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:customer, Customers.get_customer!(id))}
+     |> assign(:customer, customer)
+     |> assign(:contacts, contacts)}
   end
 
   defp page_title(:show), do: "Show Customer"
