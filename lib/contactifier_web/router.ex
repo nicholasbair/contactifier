@@ -27,8 +27,8 @@ defmodule ContactifierWeb.Router do
   scope "/api", ContactifierWeb do
     pipe_through :api
 
-    get "/webhooks/contacts", WebhookController, :challenge
-    post "/webhooks/contacts", WebhookController, :receive_webhook
+    get "/webhooks", WebhookController, :challenge
+    post "/webhooks", WebhookController, :receive_webhook
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

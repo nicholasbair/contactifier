@@ -20,7 +20,7 @@ defmodule ContactifierWeb.ContactLive.Show do
       Customers.list_customers()
       |> Enum.map(fn customer -> {customer.name, customer.id} end)
 
-    # Settings customers independently of contact in assign/3 doesn't work
+    # Setting customers independently of contact in assign/3 doesn't work
     # Bit of a hack, passing customers on contact map
     contact = Map.put(contact, :customers, customers)
 
