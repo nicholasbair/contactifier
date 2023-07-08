@@ -31,9 +31,18 @@ defmodule ContactifierWeb.ContactLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
+    contact = %Contact{}
+    customers =
+      Customers.list_customers()
+      |> Enum.map(fn customer -> {customer.name, customer.id} end)
+
+    # Setting customers independently of contact in assign/3 doesn't work
+    # Bit of a hack, passing customers on contact map
+    contact = Map.put(contact, :customers, customers)
+
     socket
     |> assign(:page_title, "New Contact")
-    |> assign(:contact, %Contact{})
+    |> assign(:contact, contact)
   end
 
   defp apply_action(socket, :index, _params) do

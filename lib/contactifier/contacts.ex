@@ -57,6 +57,11 @@ defmodule Contactifier.Contacts do
     |> Repo.normalize_one()
   end
 
+  def get_contact_by_email(email) do
+    Repo.get_by(Contact, email: email)
+    |> Repo.normalize_one()
+  end
+
   @doc """
   Creates a contact.
 

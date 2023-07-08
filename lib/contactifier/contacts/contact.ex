@@ -19,6 +19,6 @@ defmodule Contactifier.Contacts.Contact do
   def changeset(contact, attrs) do
     contact
     |> cast(attrs, [:email, :first_name, :last_name, :role, :customer_id, :vendor_id])
-    |> validate_required([:email, :vendor_id])
+    |> validate_required([:email])
   end
 end
