@@ -2,6 +2,7 @@ defmodule ContactifierWeb.ContactLive.Show do
   use ContactifierWeb, :live_view
 
   alias Contactifier.Contacts
+  alias Contactifier.Customers
 
   @impl true
   def mount(_params, _session, socket) do
@@ -10,12 +11,27 @@ defmodule ContactifierWeb.ContactLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
-    {:noreply,
-     socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:contact, Contacts.get_contact!(id))}
+    {:noreply, apply_action(socket, socket.assigns.live_action, %{"id" => id})}
   end
 
-  defp page_title(:show), do: "Show Contact"
-  defp page_title(:edit), do: "Edit Contact"
+  defp apply_action(socket, :edit, %{"id" => id}) do
+    contact = Contacts.get_contact!(id)
+    customers =
+      Customers.list_customers()
+      |> Enum.map(fn customer -> {customer.name, customer.id} end)
+
+    # Settings customers independently of contact in assign/3 doesn't work
+    # Bit of a hack, passing customers on contact map
+    contact = Map.put(contact, :customers, customers)
+
+    socket
+    |> assign(:page_title, "Assign Contact")
+    |> assign(:contact, contact)
+  end
+
+  defp apply_action(socket, :show, %{"id" => id}) do
+    socket
+    |> assign(:page_title, "Show Contact")
+    |> assign(:contact, Contacts.get_contact!(id))
+  end
 end

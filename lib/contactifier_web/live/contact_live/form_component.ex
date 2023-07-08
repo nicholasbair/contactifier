@@ -19,11 +19,11 @@ defmodule ContactifierWeb.ContactLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:email]} type="text" label="Email" />
+        <.input field={@form[:email]} type="email" label="Email" />
         <.input field={@form[:first_name]} type="text" label="First name" />
         <.input field={@form[:last_name]} type="text" label="Last name" />
         <.input field={@form[:role]} type="text" label="Role" />
-        <.input field={@form[:customer_id]} type="text" label="Customer ID" required />
+        <.input field={@form[:customer_id]} type="select" label="Customer" options={@contact.customers} />
         <:actions>
           <.button phx-disable-with="Saving...">Save Contact</.button>
         </:actions>

@@ -3,6 +3,7 @@ defmodule ContactifierWeb.ContactLive.Index do
 
   alias Contactifier.Contacts
   alias Contactifier.Contacts.Contact
+  alias Contactifier.Customers
 
   @impl true
   def mount(_params, _session, socket) do
@@ -15,9 +16,18 @@ defmodule ContactifierWeb.ContactLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    contact = Contacts.get_contact!(id)
+    customers =
+      Customers.list_customers()
+      |> Enum.map(fn customer -> {customer.name, customer.id} end)
+
+    # Settings customers independently of contact in assign/3 doesn't work
+    # Bit of a hack, passing customers on contact map
+    contact = Map.put(contact, :customers, customers)
+
     socket
     |> assign(:page_title, "Assign Contact")
-    |> assign(:contact, Contacts.get_contact!(id))
+    |> assign(:contact, contact)
   end
 
   defp apply_action(socket, :new, _params) do
