@@ -7,7 +7,7 @@ defmodule ContactifierWeb.UserSettingsLive do
     ~H"""
     <.header class="text-center">
       Account Settings
-      <:subtitle>Manage your account email address and password settings</:subtitle>
+      <:subtitle>Manage your account email address, password settings and integrations</:subtitle>
     </.header>
 
     <div class="space-y-12 divide-y">
@@ -68,6 +68,9 @@ defmodule ContactifierWeb.UserSettingsLive do
             <.button phx-disable-with="Changing...">Change Password</.button>
           </:actions>
         </.simple_form>
+      </div>
+      <div class="pt-10">
+        <.link href={~p"/integrations"} class="other-btn">Integrations</.link>
       </div>
     </div>
     """
