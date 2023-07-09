@@ -139,6 +139,6 @@ defmodule Contactifier.Integrations.ContactProvider do
     |> revoke_all()
 
     connection()
-    |> ExNylas.ManagementAccounts.downgrade(id)
+    |> ExNylas.ManagementAccounts.delete(id)
   end
 end
