@@ -122,4 +122,23 @@ defmodule Contactifier.Integrations.ContactProvider do
     connection()
     |> ExNylas.Authentication.revoke_all(id)
   end
+
+  @doc """
+  Revoke and downgrade a given integration.
+
+  ## Examples
+
+      iex> delete_integration(integration)
+      {:ok, %{success: true}}
+
+      iex> delete_integration(integration)
+      {:error, reason}
+  """
+  def delete_integration(%{vendor_id: id} = integration) do
+    integration
+    |> revoke_all()
+
+    connection()
+    |> ExNylas.ManagementAccounts.downgrade(id)
+  end
 end
