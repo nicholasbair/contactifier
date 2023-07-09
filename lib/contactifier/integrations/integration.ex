@@ -12,6 +12,7 @@ defmodule Contactifier.Integrations.Integration do
     field :token, Contactifier.Encrypted.Binary
     field :vendor_id, :string
     field :email_address, :string
+    field :invalid_since, :utc_datetime
 
     timestamps()
   end
@@ -19,7 +20,7 @@ defmodule Contactifier.Integrations.Integration do
   @doc false
   def changeset(integration, attrs) do
     integration
-    |> cast(attrs, [:name, :scopes, :valid?, :user_id, :token, :vendor_id, :email_address])
+    |> cast(attrs, [:name, :scopes, :valid?, :user_id, :token, :vendor_id, :email_address, :invalid_since])
     |> validate_required([:name, :scopes, :valid?, :user_id, :token, :vendor_id, :email_address])
   end
 end

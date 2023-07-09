@@ -23,7 +23,7 @@ defmodule ContactifierWeb.WebhookController do
   def receive_webhook(conn, %{"deltas" => [%{"type" => type, "object_data" => %{"id" => id}} | _tail]} = _params) when type in ["account.invalid", "account.stopped"] do
     # This is a fairly simple operation, so not using an async job
     with {:ok, integration} <- Contactifier.Integrations.get_integration_by_vendor_id(id) do
-      Contactifier.Integrations.update_integration(integration, %{integration | valid?: false})
+      Contactifier.Integrations.update_integration(integration, %{integration | valid?: false, invalid_since: DateTime.utc_now()})
     end
 
     send_resp(conn, 200, "")

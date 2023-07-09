@@ -21,6 +21,20 @@ defmodule Contactifier.Integrations do
     Repo.all(Integration)
   end
 
+
+  @doc """
+  Returns the list of invalid integrations.
+
+  ## Examples
+
+      iex> list_invalid_integrations()
+      [%Integration{}, ...]
+
+  """
+  def list_invalid_integrations do
+    Repo.all(from i in Integration, where: i.valid? == false)
+  end
+
   @doc """
   Returns the list of integrations for a given user.
 

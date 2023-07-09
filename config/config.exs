@@ -33,7 +33,7 @@ config :contactifier, Contactifier.Mailer, adapter: Swoosh.Adapters.Local
 config :contactifier, Oban,
   repo: Contactifier.Repo,
   plugins: [{Oban.Plugins.Pruner, max_age: 300}],
-  queues: [contacts: 2]
+  queues: [contacts: 2, integrations: 2]
 
 # Configure esbuild (the version is required)
 config :esbuild,
