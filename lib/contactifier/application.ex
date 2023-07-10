@@ -27,18 +27,7 @@ defmodule Contactifier.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Contactifier.Supervisor]
-    res = Supervisor.start_link(children, opts)
-
-    # Create the first job for the integrations worker
-    # Only create the job if there isn't already a scheduled or executing job
-    fields = [:worker, :args]
-    states = [:scheduled, :executing]
-
-    %{"task" => "check_stale_integrations"}
-    |> Contactifier.Integrations.Worker.new(unique: [fields: fields, states: states])
-    |> Oban.insert!()
-
-    res
+    Supervisor.start_link(children, opts)
   end
 
   # Tell Phoenix to update the endpoint configuration

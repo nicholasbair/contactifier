@@ -8,18 +8,9 @@ defmodule Contactifier.Integrations.Worker do
     queue: :integrations,
     max_attempts: 3
 
-  @one_day 60 * 60 * 24
-  @one_week 7 * @one_day
+  @one_week 7 * 60 * 60 * 24
 
   @impl true
-  def perform(%{args: %{"task" => "check_stale_integrations"} = args, attempt: 1}) do
-    args
-    |> new(schedule_in: @one_day)
-    |> Oban.insert!()
-
-    check_stale_integrations()
-  end
-
   def perform(%{args: %{"task" => "check_stale_integrations"}}) do
     check_stale_integrations()
   end
