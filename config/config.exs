@@ -32,7 +32,13 @@ config :contactifier, Contactifier.Mailer, adapter: Swoosh.Adapters.Local
 
 config :contactifier, Oban,
   repo: Contactifier.Repo,
-  plugins: [{Oban.Plugins.Pruner, max_age: 300}],
+  plugins: [
+    {Oban.Plugins.Pruner, max_age: 300},
+    {Oban.Plugins.Cron,
+     crontab: [
+       {"@daily", Contactifier.Integrations.Worker, args: %{"task" => "check_stale_integrations"}}
+     ]}
+  ],
   queues: [contacts: 2, integrations: 2]
 
 # Configure esbuild (the version is required)
