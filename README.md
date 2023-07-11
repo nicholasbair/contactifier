@@ -11,12 +11,12 @@ Imagine you are a user of a CRM/CSP tool.  When you have email interactions with
 * A user can have many integrations (e.g. multiple accounts connected via Nylas)
 * Webhooks for parsed contacts
 * Webhooks for Nylas connected account status
-* Scheduled job to delete stale Nylas connected accounts
+* Scheduled job to delete stale integrations (Nylas connected accounts)
 
 ### What's missing?
 * Tests
 * A concept of organzations, where multiple users can access a shared group of customers, contacts, etc.
-* Email notifications for integration re-auth
+* Email notifications for integration re-auth, signup welcome emails, password reset emails, etc.
 * The bulk of stuff you would expect in a CRM/CSP: emailing, customer metrics, etc.
 
 ## Running locally
@@ -27,3 +27,5 @@ Imagine you are a user of a CRM/CSP tool.  When you have email interactions with
 * Run `mix setup` to install and setup dependencies
 * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 * Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+* Setup your auth callback URL in the Nylas dashboard with the following format `#{your_base_url}/integrations/callback`.
+* With the server running, setup your webhook URL in the Nylas dashboard with the triggers: `account.stopped`, `account.invalid`, and `contact.created` and the URL `#{your_base_url}/api/webhooks`.
