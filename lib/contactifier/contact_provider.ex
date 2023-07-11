@@ -1,6 +1,6 @@
 defmodule Contactifier.Integrations.ContactProvider do
   @moduledoc """
-  Wrapper around ExNylas to provide convenience functions for interacting with the Nylas API.
+  Wrapper around ExNylas SDK to provide convenience functions for interacting with the Nylas API.
   """
 
   @doc """

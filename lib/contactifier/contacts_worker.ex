@@ -6,7 +6,7 @@ defmodule Contactifier.Contacts.Worker do
     max_attempts: 3
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"id" => id, "account_id" => account_id} = _args}) do
+  def perform(%Oban.Job{args: %{"id" => id, "account_id" => account_id}}) do
     # Don't create a contact in the DB if:
       # 1. A contact with the same vendor_id already exists in the DB
       # 2. A contact with the same email already exists in the DB (a user could manually create a contact with the same email)
