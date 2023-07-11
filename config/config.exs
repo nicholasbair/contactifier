@@ -36,7 +36,7 @@ config :contactifier, Oban,
     {Oban.Plugins.Pruner, max_age: 300},
     {Oban.Plugins.Cron,
      crontab: [
-       {"@daily", Contactifier.Integrations.Worker, args: %{"task" => "check_stale_integrations"}}
+        {"@daily", Contactifier.Integrations.Worker, args: %{"task" => "check_stale_integrations"}}
      ]}
   ],
   queues: [contacts: 2, integrations: 2]
