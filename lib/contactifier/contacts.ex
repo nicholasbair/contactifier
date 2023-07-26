@@ -22,7 +22,7 @@ defmodule Contactifier.Contacts do
   end
 
   def list_parsed_contacts do
-    query = from c in Contact, where: is_nil(c.customer_id) and c.deleted? == false
+    query = from c in Contact, where: is_nil(c.customer_id) and not c.deleted?
     Repo.all(query)
   end
 
