@@ -36,10 +36,11 @@ config :contactifier, Oban,
     {Oban.Plugins.Pruner, max_age: 300},
     {Oban.Plugins.Cron,
      crontab: [
-        {"@daily", Contactifier.Integrations.Worker, args: %{"task" => "check_stale_integrations"}}
+        {"@daily", Contactifier.Integrations.Worker, args: %{"task" => "check_stale_integrations"}},
+        {"@daily", Contactifier.Contacts.Worker, args: %{"task" => "check_soft_deleted_contacts"}}
      ]}
   ],
-  queues: [contacts: 2, integrations: 2]
+  queues: [messages: 2, contacts: 2, integrations: 2]
 
 # Configure esbuild (the version is required)
 config :esbuild,

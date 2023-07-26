@@ -13,7 +13,7 @@
   row_click={fn {_id, integration} -> JS.navigate(~p"/integrations/#{integration}") end}
 >
   <:col :let={{_id, integration}} label="Name"><%= integration.name %></:col>
-  <:col :let={{_id, integration}} label="Scopes"><%= integration.scopes %></:col>
+  <:col :let={{_id, integration}} label="Description"><%= integration.description %></:col>
   <:col :let={{_id, integration}} label="Healthy"><%= integration.valid? %></:col>
   <:action :let={{_id, integration}}>
     <div class="sr-only">
@@ -44,6 +44,9 @@
       <img class="w-6 h-6" <img src={~p"/images/google_button.svg"} loading="lazy" alt="google logo">
       <span>Sign in with Google</span>
     </button>
-    <img phx-click="start_auth" value="microsoft" src={~p"/images/microsoft_button.svg"} />
+    <button phx-click="start_auth" value="microsoft">
+      <img src={~p"/images/microsoft_button.svg"} />
+    </button>
+    
   </div>
 </.modal>

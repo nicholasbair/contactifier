@@ -19,7 +19,7 @@ defmodule ContactifierWeb.IntegrationLive.Show do
   @impl true
   def handle_event("start_reauth", %{"id" => id}, socket) do
     integration = Integrations.get_integration_for_user!(socket.assigns.current_user.id, id)
-    {:ok, url} = Integrations.ContactProvider.auth_url(integration.email_address)
+    {:ok, url} = Integrations.ContactProvider.auth_url(integration.provider, integration.email_address)
 
     {:noreply, redirect(socket, external: url)}
   end

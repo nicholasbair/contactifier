@@ -1,17 +1,22 @@
 defmodule ContactifierWeb.IntegrationController do
   use ContactifierWeb, :controller
-  alias Contactifier.Integrations.ContactProvider
 
   # Note - ideally should be using and checking the state param on the callback
-  def callback(conn, params) do
-    with {:ok, account} <- ContactProvider.exchange_code_for_token(params["code"]),
-        {:ok, integration} <- Contactifier.Integrations.upsert_integration(%{"name" => "Email/Contacts", "scopes" => ["email.read_only", "contacts.read_only"], "valid?" => true, "user_id" => conn.assigns.current_user.id, "token" => account.access_token, "vendor_id" => account.account_id, "email_address" => account.email_address, "invalid_since" => nil}) do
+  def callback(conn, %{"success" => "true", "provider" => provider, "grant_id" => vendor_id, "email" => email} = _params) do
+    with {:ok, _integration} <-
+      Contactifier.Integrations.upsert_integration(
+        %{
+          "name" => "Email Integration",
+          "description" => "This integration has read access to your email.",
+          "valid?" => true,
+          "user_id" => conn.assigns.current_user.id,
+          "vendor_id" => vendor_id,
+          "email_address" => email,
+          "invalid_since" => nil,
+          "provider" => provider
+        }) do
 
-      # If there is only one valid token, SDK will return an error from the Nylas API
-      # Calling revoke here will ensure there is only ever one valid token
-      ContactProvider.revoke_all_except(integration)
-
-      conn
+        conn
       |> put_flash(:info, "Authentication successful!")
       |> redirect(to: ~p"/integrations")
     else
@@ -20,5 +25,11 @@ defmodule ContactifierWeb.IntegrationController do
         |> put_flash(:error, "Authentication unsuccessful.")
         |> redirect(to: ~p"/integrations")
     end
+  end
+
+  def callback(conn, %{"success" => "false"} = _params) do
+    conn
+    |> put_flash(:error, "Authentication unsuccessful.")
+    |> redirect(to: ~p"/integrations")
   end
 end

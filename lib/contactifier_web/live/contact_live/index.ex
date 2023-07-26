@@ -59,7 +59,7 @@ defmodule ContactifierWeb.ContactLive.Index do
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     contact = Contacts.get_contact!(id)
-    {:ok, _} = Contacts.delete_contact(contact)
+    {:ok, _} = Contacts.soft_delete_contact(contact)
 
     {:noreply, stream_delete(socket, :contacts, contact)}
   end
