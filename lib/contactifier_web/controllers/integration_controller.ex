@@ -16,7 +16,7 @@ defmodule ContactifierWeb.IntegrationController do
           "provider" => provider
         }) do
 
-        conn
+      conn
       |> put_flash(:info, "Authentication successful!")
       |> redirect(to: ~p"/integrations")
     else
