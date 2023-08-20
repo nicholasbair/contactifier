@@ -3,7 +3,7 @@ defmodule ContactifierWeb.IntegrationController do
 
   # Note - ideally should be using and checking the state param on the callback
   def callback(conn, %{"success" => "true", "provider" => provider, "grant_id" => vendor_id, "email" => email} = _params) do
-    with {:ok, _integration} <-
+    with {:ok, integration} <-
       Contactifier.Integrations.upsert_integration(
         %{
           "name" => "Email Integration",
@@ -15,6 +15,11 @@ defmodule ContactifierWeb.IntegrationController do
           "invalid_since" => nil,
           "provider" => provider
         }) do
+
+      # Nylas no longer does historic sync in API v3, so kick off our own historic sync
+      %{"task" => "historic_sync", "integration_id" => integration.id}
+      |> Contactifier.Messages.Worker.new()
+      |> Oban.insert!()
 
       conn
       |> put_flash(:info, "Authentication successful!")
