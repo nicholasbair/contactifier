@@ -13,6 +13,7 @@ defmodule Contactifier.Integrations.Integration do
     field :email_address, :string
     field :invalid_since, :utc_datetime
     field :provider, :string
+    field :last_synced, :utc_datetime
 
     timestamps()
   end
@@ -20,7 +21,7 @@ defmodule Contactifier.Integrations.Integration do
   @doc false
   def changeset(integration, attrs) do
     integration
-    |> cast(attrs, [:name, :description, :valid?, :user_id, :vendor_id, :email_address, :invalid_since, :provider])
+    |> cast(attrs, [:name, :description, :valid?, :user_id, :vendor_id, :email_address, :invalid_since, :provider, :last_synced])
     |> validate_required([:name, :description, :valid?, :user_id, :vendor_id, :email_address, :provider])
   end
 end

@@ -37,7 +37,8 @@ config :contactifier, Oban,
     {Oban.Plugins.Cron,
      crontab: [
         {"@daily", Contactifier.Integrations.Worker, args: %{"task" => "check_stale_integrations"}},
-        {"@daily", Contactifier.Contacts.Worker, args: %{"task" => "check_soft_deleted_contacts"}}
+        {"@daily", Contactifier.Contacts.Worker, args: %{"task" => "check_soft_deleted_contacts"}},
+        {"@daily", Contactifier.Messages.Worker, args: %{"task" => "start_incremental_sync"}}
      ]}
   ],
   queues: [messages: 2, contacts: 2, integrations: 2]
