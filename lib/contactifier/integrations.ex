@@ -21,6 +21,18 @@ defmodule Contactifier.Integrations do
     Repo.all(Integration)
   end
 
+  @doc """
+  Returns the list of valid integrations.
+
+  ## Examples
+
+      iex> list_valid_integrations()
+      [%Integration{}, ...]
+
+  """
+  def list_valid_integrations do
+    Repo.all(from i in Integration, where: i.valid? and not is_nil(i.last_synced))
+  end
 
   @doc """
   Returns the list of invalid integrations.
@@ -32,7 +44,7 @@ defmodule Contactifier.Integrations do
 
   """
   def list_invalid_integrations do
-    Repo.all(from i in Integration, where: i.valid? == false)
+    Repo.all(from i in Integration, where: not i.valid?)
   end
 
   @doc """
