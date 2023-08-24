@@ -1,5 +1,8 @@
 # Contactifier
 
+## **Note**
+_As of API v3, Nylas does not have a concept of parsed contacts, thus this app now uses messages to create parsed contacts within the app._
+
 ## Use case
 Demonstrate the usage of Nylas parsed contacts in a CRM/CSP-like platform.
 
