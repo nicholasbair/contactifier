@@ -23,9 +23,9 @@ Imagine you are a user of a CRM/CSP tool.  When you have email interactions with
 * Clone the repo
 * CD into the directory
 * Make sure you have Postgres running
-* Set environment variables: `CLOAK_KEY`, `NYLAS_CLIENT_ID`, `NYLAS_CLIENT_SECRET`
+* Set environment variables: `CLOAK_KEY`, `NYLAS_API_KEY_V3`, `NYLAS_CLIENT_ID_V3`, `NYLAS_CLIENT_SECRET_V3`
 * Run `mix setup` to install and setup dependencies
 * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 * Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 * Setup your auth callback URL in the Nylas dashboard with the following format `#{your_base_url}/integrations/callback`.
-* With the server running, setup your webhook URL in the Nylas dashboard with the triggers: `account.stopped`, `account.invalid`, and `contact.created` and the URL `#{your_base_url}/api/webhooks`.
+* With the server running, setup your webhook URL in the Nylas dashboard with the triggers: `grant.expired`, and `message.created` and the URL `#{your_base_url}/api/webhooks`.
