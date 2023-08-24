@@ -1,10 +1,20 @@
 defmodule ContactifierWeb.IntegrationController do
   use ContactifierWeb, :controller
 
+  require Logger
+
+  alias Contactifier.{
+    Integrations,
+    Integrations.ContactProvider,
+    Messages.Worker
+  }
+
   # Note - ideally should be using and checking the state param on the callback
-  def callback(conn, %{"success" => "true", "provider" => provider, "grant_id" => vendor_id, "email" => email} = _params) do
-    with {:ok, integration} <-
-      Contactifier.Integrations.upsert_integration(
+  def callback(conn, %{"code" => code} = _params) do
+    with {:ok, %{grant_id: vendor_id}} <- ContactProvider.exchange_code(code),
+      {:ok, %{data: %{email: email, provider: provider}}} = ContactProvider.get_grant(vendor_id),
+      {:ok, integration} <-
+        Integrations.upsert_integration(
         %{
           "name" => "Email Integration",
           "description" => "This integration has read access to your email.",
@@ -14,11 +24,12 @@ defmodule ContactifierWeb.IntegrationController do
           "email_address" => email,
           "invalid_since" => nil,
           "provider" => provider
-        }) do
+        })
+        do
 
       # Nylas no longer does historic sync in API v3, so kick off our own historic sync
       %{"task" => "historic_sync", "integration_id" => integration.id}
-      |> Contactifier.Messages.Worker.new()
+      |> Worker.new()
       |> Oban.insert!()
 
       conn
@@ -32,7 +43,9 @@ defmodule ContactifierWeb.IntegrationController do
     end
   end
 
-  def callback(conn, %{"success" => "false"} = _params) do
+  def callback(conn, %{"error" => error, "error_code" => error_code, "error_description" => error_description} = _params) do
+    Logger.error("Error authenticating with Nylas: #{inspect(error)} #{inspect(error_code)} #{inspect(error_description)}")
+
     conn
     |> put_flash(:error, "Authentication unsuccessful.")
     |> redirect(to: ~p"/integrations")

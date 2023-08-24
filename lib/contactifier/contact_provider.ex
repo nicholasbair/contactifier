@@ -15,12 +15,13 @@ defmodule Contactifier.Integrations.ContactProvider do
   """
   def auth_url(provider, email \\ nil) do
     res =
-      connection()
+      connection_with_client_creds()
       |> ExNylas.Authentication.Hosted.get_auth_url(
         %{
           redirect_uri: Application.get_env(:contactifier, :nylas_redirect_uri),
           login_hint: email,
           provider: provider,
+          response_type: "code",
         }
       )
 
@@ -28,6 +29,41 @@ defmodule Contactifier.Integrations.ContactProvider do
       {:ok, %{data: %{url: url}}} -> {:ok, url}
       _ -> res
     end
+  end
+
+  @doc """
+  Exchange the code for a grant.
+
+  ## Examples
+
+      iex> exchange_code("1234abcd")
+      {:ok, %{grant_id: "abcd"}}
+
+      iex> exchange_code("1234abcd")
+      {:error, reason}
+  """
+  def exchange_code(code) do
+    connection_with_client_creds()
+    |> ExNylas.Authentication.Hosted.exchange_code_for_token(
+      code,
+      Application.get_env(:contactifier, :nylas_redirect_uri)
+    )
+  end
+
+  @doc """
+  Return the Nylas grant.
+
+  ## Examples
+
+      iex> get_grant("abcd")
+      {:ok, %{grant_id: "abcd"}}
+
+      iex> get_grant("abcd")
+      {:error, reason}
+  """
+  def get_grant(grant_id) do
+    connection_with_token(%{vendor_id: grant_id})
+    |> ExNylas.Grants.find()
   end
 
   @doc """
@@ -45,6 +81,25 @@ defmodule Contactifier.Integrations.ContactProvider do
     %ExNylas.Connection{
       api_server: Application.get_env(:contactifier, :nylas_api_server),
       api_key: Application.get_env(:contactifier, :nylas_api_key),
+    }
+  end
+
+  @doc """
+  Returns the connection for the Nylas integration with client credentials.
+
+  ## Examples
+
+      iex> connection()
+      %ExNylas.Connection{
+        client_id: "1234",
+        client_secret: "5678"
+      }
+  """
+  def connection_with_client_creds() do
+    %ExNylas.Connection{
+      api_server: Application.get_env(:contactifier, :nylas_api_server),
+      client_id: Application.get_env(:contactifier, :nylas_client_id),
+      client_secret: Application.get_env(:contactifier, :nylas_client_secret),
     }
   end
 

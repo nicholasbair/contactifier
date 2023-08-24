@@ -26,8 +26,22 @@ nylas_api_key =
     environment variable NYLAS_API_KEY_V3 is missing.
     """
 
+nylas_client_id =
+  System.get_env("NYLAS_CLIENT_ID_V3") ||
+    raise """
+    environment variable NYLAS_CLIENT_ID_V3 is missing.
+    """
+
+nylas_client_secret =
+  System.get_env("NYLAS_CLIENT_SECRET_V3") ||
+    raise """
+    environment variable NYLAS_CLIENT_SECRET_V3 is missing.
+    """
+
 config :contactifier,
-  nylas_api_key: nylas_api_key
+  nylas_api_key: nylas_api_key,
+  nylas_client_id: nylas_client_id,
+  nylas_client_secret: nylas_client_secret
 
 if config_env() == :prod do
   database_url =
