@@ -72,7 +72,7 @@ defmodule Contactifier.Messages.Worker do
         process_messages(messages, integration.email_address)
 
         # Set last synced so that incremental sync knows where to start
-        {:ok, _} = Integrations.update_integration(integration, %{last_synced: DateTime.utc_now()})
+        {:ok, _} = Integrations.update_integration(integration, %{last_synced: DateTime.utc_now(), historic_completed?: true})
 
     else {:error, reason} ->
       Logger.error("Error completing historic message sync: #{inspect(reason)}")

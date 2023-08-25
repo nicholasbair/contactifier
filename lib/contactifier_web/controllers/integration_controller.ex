@@ -28,9 +28,11 @@ defmodule ContactifierWeb.IntegrationController do
         do
 
       # Nylas no longer does historic sync in API v3, so kick off our own historic sync
-      %{"task" => "historic_sync", "integration_id" => integration.id}
-      |> Worker.new()
-      |> Oban.insert!()
+      if not integration.historic_completed? do
+        %{"task" => "historic_sync", "integration_id" => integration.id}
+        |> Worker.new()
+        |> Oban.insert!()
+      end
 
       conn
       |> put_flash(:info, "Authentication successful!")
