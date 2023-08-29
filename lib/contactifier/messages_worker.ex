@@ -55,7 +55,7 @@ defmodule Contactifier.Messages.Worker do
         {:ok, _} = Integrations.update_integration(integration, %{last_synced: DateTime.utc_now()})
 
     else {:error, reason} ->
-      Logger.error("Error completing historic message sync: #{inspect(reason)}")
+      Logger.error("Error completing incremental message sync: #{inspect(reason)}")
     end
   end
 
