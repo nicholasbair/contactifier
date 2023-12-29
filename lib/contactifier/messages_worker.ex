@@ -61,7 +61,7 @@ defmodule Contactifier.Messages.Worker do
 
   # Perform historic sync of messages
   # - This is a one off job that runs when a user connects a new integration
-  # - It will sync all messages from the last 14 days in the inbox folder/label
+  # - It will sync all messages from the last 7 days in the inbox folder/label
   # - Then create a contact for each unique email address in the message
   def perform(%Oban.Job{args: %{"task" => "historic_sync", "integration_id" => integration_id}}) do
     with {:ok, integration} <- Integrations.get_integration(integration_id),
@@ -81,7 +81,7 @@ defmodule Contactifier.Messages.Worker do
 
   def get_historic_date() do
     DateTime.utc_now()
-    |> DateTime.add(-14, :day)
+    |> DateTime.add(-7, :day)
     |> DateTime.to_unix()
   end
 
