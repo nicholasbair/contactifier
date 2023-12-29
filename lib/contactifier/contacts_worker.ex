@@ -12,6 +12,8 @@ defmodule Contactifier.Contacts.Worker do
     with {:error, :not_found} <- Contactifier.Contacts.get_contact_by_email(email),
       {:ok, _contact} <- Contactifier.Contacts.create_contact(%{email: email}) do
         Logger.info("Created contact with email #{email}")
+    else error ->
+      Logger.error("Error creating contact with email #{email}: #{inspect(error)}")
     end
   end
 
