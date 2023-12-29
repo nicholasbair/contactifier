@@ -38,7 +38,7 @@ defmodule Contactifier.Integrations.ContactProvider do
   """
   def exchange_code(code) do
     connection_with_client_creds()
-    |> ExNylas.Authentication.Hosted.exchange_code_for_token(
+    |> ExNylas.HostedAuthentication.exchange_code_for_token(
       code,
       Application.get_env(:contactifier, :nylas_redirect_uri)
     )
