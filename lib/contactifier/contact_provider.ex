@@ -14,21 +14,15 @@ defmodule Contactifier.Integrations.ContactProvider do
       {:ok, "https://api.us.nylas.com/v3/connect/login?id=1234abcd"}
   """
   def auth_url(provider, email \\ nil) do
-    res =
-      connection_with_client_creds()
-      |> ExNylas.Authentication.Hosted.get_auth_url(
-        %{
-          redirect_uri: Application.get_env(:contactifier, :nylas_redirect_uri),
-          login_hint: email,
-          provider: provider,
-          response_type: "code",
-        }
-      )
-
-    case res do
-      {:ok, %{data: %{url: url}}} -> {:ok, url}
-      _ -> res
-    end
+    connection_with_client_creds()
+    |> ExNylas.HostedAuthentication.get_auth_url(
+      %{
+        redirect_uri: Application.get_env(:contactifier, :nylas_redirect_uri),
+        login_hint: email,
+        provider: provider,
+        response_type: "code",
+      }
+    )
   end
 
   @doc """
@@ -63,7 +57,7 @@ defmodule Contactifier.Integrations.ContactProvider do
   """
   def get_grant(grant_id) do
     connection_with_token(%{vendor_id: grant_id})
-    |> ExNylas.Grants.find()
+    |> ExNylas.Grants.find(grant_id)
   end
 
   @doc """
