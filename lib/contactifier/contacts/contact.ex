@@ -11,6 +11,8 @@ defmodule Contactifier.Contacts.Contact do
     field :role, :string
     field :customer_id, :binary_id
     field :vendor_id, :string
+    field :deleted?, :boolean, default: false
+    field :deleted_at, :utc_datetime
 
     timestamps()
   end
@@ -18,7 +20,7 @@ defmodule Contactifier.Contacts.Contact do
   @doc false
   def changeset(contact, attrs) do
     contact
-    |> cast(attrs, [:email, :first_name, :last_name, :role, :customer_id, :vendor_id])
+    |> cast(attrs, [:email, :first_name, :last_name, :role, :customer_id, :vendor_id, :deleted?, :deleted_at])
     |> validate_required([:email])
   end
 end

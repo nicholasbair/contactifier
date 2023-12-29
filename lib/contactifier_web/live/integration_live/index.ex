@@ -16,12 +16,9 @@ defmodule ContactifierWeb.IntegrationLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
-    {:ok, url} = Integrations.ContactProvider.auth_url()
-
     socket
     |> assign(:page_title, "New Integration")
     |> assign(:integration, %Integration{})
-    |> assign(:auth_url, url)
   end
 
   defp apply_action(socket, :index, _params) do
@@ -38,22 +35,22 @@ defmodule ContactifierWeb.IntegrationLive.Index do
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     integration = Integrations.get_integration_for_user!(socket.assigns.current_user.id, id)
-    ContactProvider.revoke_all(integration)
+    ContactProvider.delete_integration(integration)
     {:ok, _} = Integrations.delete_integration(integration)
 
     {:noreply, stream_delete(socket, :integrations, integration)}
   end
 
   @impl true
-  def handle_event("start_auth", _params, socket) do
-    {:ok, url} = Integrations.ContactProvider.auth_url()
+  def handle_event("start_auth", %{"value" => provider}, socket) when provider in ["google", "microsoft"] do
+    {:ok, url} = Integrations.ContactProvider.auth_url(provider)
     {:noreply, redirect(socket, external: url)}
   end
 
   @impl true
   def handle_event("start_reauth", %{"id" => id}, socket) do
     integration = Integrations.get_integration_for_user!(socket.assigns.current_user.id, id)
-    {:ok, url} = Integrations.ContactProvider.auth_url(integration.email_address)
+    {:ok, url} = Integrations.ContactProvider.auth_url(integration.provider, integration.email_address)
 
     {:noreply, redirect(socket, external: url)}
   end

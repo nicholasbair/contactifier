@@ -20,30 +20,26 @@ if System.get_env("PHX_SERVER") do
   config :contactifier, ContactifierWeb.Endpoint, server: true
 end
 
-cloak_key =
-  System.get_env("CLOAK_KEY") ||
+nylas_api_key =
+  System.get_env("NYLAS_API_KEY_V3") ||
     raise """
-    environment variable CLOAK_KEY is missing.
+    environment variable NYLAS_API_KEY_V3 is missing.
     """
 
-config :contactifier, Contactifier.Vault,
-  ciphers: [
-    default: {Cloak.Ciphers.AES.GCM, tag: "AES.GCM.V1", key: Base.decode64!(cloak_key)}
-  ]
-
 nylas_client_id =
-  System.get_env("NYLAS_CLIENT_ID") ||
+  System.get_env("NYLAS_CLIENT_ID_V3") ||
     raise """
-    environment variable NYLAS_CLIENT_ID is missing.
+    environment variable NYLAS_CLIENT_ID_V3 is missing.
     """
 
 nylas_client_secret =
-  System.get_env("NYLAS_CLIENT_SECRET") ||
+  System.get_env("NYLAS_CLIENT_SECRET_V3") ||
     raise """
-    environment variable NYLAS_CLIENT_SECRET is missing.
+    environment variable NYLAS_CLIENT_SECRET_V3 is missing.
     """
 
 config :contactifier,
+  nylas_api_key: nylas_api_key,
   nylas_client_id: nylas_client_id,
   nylas_client_secret: nylas_client_secret
 

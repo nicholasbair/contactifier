@@ -3,35 +3,67 @@ defmodule Contactifier.Integrations.ContactProvider do
   Wrapper around ExNylas SDK to provide convenience functions for interacting with the Nylas API.
   """
 
+  import Contactifier.Util, only: [normalize_one: 1]
+
   @doc """
   Returns the auth URL for the Nylas integration.
 
   ## Examples
 
       iex> auth_url()
-      {:ok, "https://api.nylas.com/oauth/authorize?client_id=1234&redirect_uri=https://example.com&response_type=code&scopes=email.read_only,contacts.read_only"}
+      {:ok, "https://api.us.nylas.com/v3/connect/login?id=1234abcd"}
   """
-  def auth_url() do
-    __MODULE__.connection()
-    |> ExNylas.Authentication.Hosted.get_auth_url(
-      %{
-        redirect_uri: Application.get_env(:contactifier, :nylas_redirect_uri),
-        scopes: ["email.read_only", "contacts.read_only"],
-        response_type: "code"
-      }
+  def auth_url(provider, email \\ nil) do
+    res =
+      connection_with_client_creds()
+      |> ExNylas.Authentication.Hosted.get_auth_url(
+        %{
+          redirect_uri: Application.get_env(:contactifier, :nylas_redirect_uri),
+          login_hint: email,
+          provider: provider,
+          response_type: "code",
+        }
+      )
+
+    case res do
+      {:ok, %{data: %{url: url}}} -> {:ok, url}
+      _ -> res
+    end
+  end
+
+  @doc """
+  Exchange the code for a grant.
+
+  ## Examples
+
+      iex> exchange_code("1234abcd")
+      {:ok, %{grant_id: "abcd"}}
+
+      iex> exchange_code("1234abcd")
+      {:error, reason}
+  """
+  def exchange_code(code) do
+    connection_with_client_creds()
+    |> ExNylas.Authentication.Hosted.exchange_code_for_token(
+      code,
+      Application.get_env(:contactifier, :nylas_redirect_uri)
     )
   end
 
-  def auth_url(email) do
-    __MODULE__.connection()
-    |> ExNylas.Authentication.Hosted.get_auth_url(
-      %{
-        redirect_uri: Application.get_env(:contactifier, :nylas_redirect_uri),
-        scopes: ["email.read_only", "contacts.read_only"],
-        response_type: "code",
-        login_hint: email
-      }
-    )
+  @doc """
+  Return the Nylas grant.
+
+  ## Examples
+
+      iex> get_grant("abcd")
+      {:ok, %{grant_id: "abcd"}}
+
+      iex> get_grant("abcd")
+      {:error, reason}
+  """
+  def get_grant(grant_id) do
+    connection_with_token(%{vendor_id: grant_id})
+    |> ExNylas.Grants.find()
   end
 
   @doc """
@@ -42,11 +74,28 @@ defmodule Contactifier.Integrations.ContactProvider do
       iex> connection()
       %ExNylas.Connection{
         api_server: "https://api.nylas.com",
+        api_key: "5678"
+      }
+  """
+  def connection() do
+    %ExNylas.Connection{
+      api_server: Application.get_env(:contactifier, :nylas_api_server),
+      api_key: Application.get_env(:contactifier, :nylas_api_key),
+    }
+  end
+
+  @doc """
+  Returns the connection for the Nylas integration with client credentials.
+
+  ## Examples
+
+      iex> connection()
+      %ExNylas.Connection{
         client_id: "1234",
         client_secret: "5678"
       }
   """
-  def connection() do
+  def connection_with_client_creds() do
     %ExNylas.Connection{
       api_server: Application.get_env(:contactifier, :nylas_api_server),
       client_id: Application.get_env(:contactifier, :nylas_client_id),
@@ -62,69 +111,20 @@ defmodule Contactifier.Integrations.ContactProvider do
     iex> connection_with_token("abcd")
     %ExNylas.Connection{
         api_server: "https://api.nylas.com",
-        client_id: "1234",
-        client_secret: "5678",
-        access_token: "abcd"
+        grant_id: "abcd",
+        api_key: "5678"
       }
   """
-  def connection_with_token(%{token: token} = _integration) do
+  def connection_with_token(%{vendor_id: id} = _integration) do
     %ExNylas.Connection{
       api_server: Application.get_env(:contactifier, :nylas_api_server),
-      access_token: token
+      grant_id: id,
+      api_key: Application.get_env(:contactifier, :nylas_api_key),
     }
   end
 
   @doc """
-  Returns the Nylas connected account.
-
-  ## Examples
-
-      iex> exchange_code_for_token("abcd")
-      {:ok, %ExNylas.Account{
-        account_id: "abcd",
-        access_token: "efgh",
-        email_address: "nick@example.com"
-      }}
-  """
-  def exchange_code_for_token(code) do
-    connection()
-    |> ExNylas.Authentication.Hosted.exchange_code_for_token(code)
-  end
-
-  @doc """
-  Revokes all tokens except the given token.
-
-  ## Examples
-
-      iex> revoke_all_except(integration)
-      {:ok, %{success: true}}
-
-      iex> revoke_all_except(integration)
-      {:error, reason}
-  """
-  def revoke_all_except(%{token: token, vendor_id: id} = _integration) do
-    connection()
-    |> ExNylas.Authentication.revoke_all(id, token)
-  end
-
-  @doc """
-  Revokes all tokens.
-
-  ## Examples
-
-      iex> revoke_all(integration)
-      {:ok, %{success: true}}
-
-      iex> revoke_all(integration)
-      {:error, reason}
-  """
-  def revoke_all(%{vendor_id: id} = _integration) do
-    connection()
-    |> ExNylas.Authentication.revoke_all(id)
-  end
-
-  @doc """
-  Revoke and downgrade a given integration.
+  Delete a given integration.
 
   ## Examples
 
@@ -134,11 +134,64 @@ defmodule Contactifier.Integrations.ContactProvider do
       iex> delete_integration(integration)
       {:error, reason}
   """
-  def delete_integration(%{vendor_id: id} = integration) do
+  def delete_integration(%{vendor_id: id} = _integration) do
+    connection()
+    |> ExNylas.Grants.delete(id)
+  end
+
+  @doc """
+  Fetch a message.
+
+  ## Examples
+
+      iex> get_message(integration, "1234")
+      {:ok, %{id: "1234"}}
+
+      iex> get_message(integration, "1234")
+      {:error, reason}
+  """
+  def get_message(integration, id) do
     integration
-    |> revoke_all()
-
-    connection()
-    |> ExNylas.ManagementAccounts.delete(id)
+    |> connection_with_token()
+    |> ExNylas.Messages.find(id)
   end
+
+  @doc """
+  Get all messages.
+
+  ## Examples
+
+      iex> get_messages(integration)
+      {:ok, [%{id: "1234"}]}
+
+      iex> get_messages()
+      {:error, reason}
+  """
+  def get_messages(integration, query \\ %{}) do
+    integration
+    |> connection_with_token()
+    |> ExNylas.Messages.all(query)
+  end
+
+  @doc """
+  Get inbox folder for a given integration.
+
+  ## Examples
+
+      iex> get_inbox_folder(integration)
+      {:ok, %{data: [%{id: "1234"}]}}
+
+      iex> get_inbox_folder(integration)
+      {:error, reason}
+  """
+  def get_inbox_folder(integration) do
+    with {:ok, data} <- connection_with_token(integration) |> ExNylas.Folders.all() do
+      data
+      |> Enum.find(fn folder -> Enum.member?(["INBOX", "Inbox", "inbox"], folder.name) end)
+      |> normalize_one()
+    else
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
 end

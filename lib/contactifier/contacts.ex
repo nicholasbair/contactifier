@@ -22,7 +22,7 @@ defmodule Contactifier.Contacts do
   end
 
   def list_parsed_contacts do
-    query = from c in Contact, where: is_nil(c.customer_id)
+    query = from c in Contact, where: is_nil(c.customer_id) and not c.deleted?
     Repo.all(query)
   end
 
@@ -62,6 +62,12 @@ defmodule Contactifier.Contacts do
     |> Repo.normalize_one()
   end
 
+  def get_soft_deleted_for_deletion() do
+    Contact
+    |> where([c], c.deleted? == true and c.deleted_at < datetime_add(^DateTime.utc_now(), -1, "month"))
+    |> Repo.all()
+  end
+
   @doc """
   Creates a contact.
 
@@ -96,6 +102,23 @@ defmodule Contactifier.Contacts do
     contact
     |> Contact.changeset(attrs)
     |> Repo.update()
+  end
+
+  @doc """
+  Soft deletes a contact.
+
+  ## Examples
+
+      iex> soft_delete_contact(contact)
+      {:ok, %Contact{}}
+
+      iex> soft_delete_contact(contact)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def soft_delete_contact(%Contact{} = contact) do
+    contact
+    |> update_contact(%{deleted?: true, deleted_at: DateTime.utc_now()})
   end
 
   @doc """

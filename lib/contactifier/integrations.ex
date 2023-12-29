@@ -21,6 +21,18 @@ defmodule Contactifier.Integrations do
     Repo.all(Integration)
   end
 
+  @doc """
+  Returns the list of valid integrations.
+
+  ## Examples
+
+      iex> list_valid_integrations()
+      [%Integration{}, ...]
+
+  """
+  def list_valid_integrations do
+    Repo.all(from i in Integration, where: i.valid? and not is_nil(i.last_synced))
+  end
 
   @doc """
   Returns the list of invalid integrations.
@@ -32,7 +44,7 @@ defmodule Contactifier.Integrations do
 
   """
   def list_invalid_integrations do
-    Repo.all(from i in Integration, where: i.valid? == false)
+    Repo.all(from i in Integration, where: not i.valid?)
   end
 
   @doc """
@@ -63,6 +75,24 @@ defmodule Contactifier.Integrations do
 
   """
   def get_integration!(id), do: Repo.get!(Integration, id)
+
+  @doc """
+  Gets a single integration.
+
+  ## Examples
+
+      iex> get_integration(123)
+      {:ok, %Integration{}}
+
+      iex> get_integration(456)
+      {:error, :not_found}
+
+  """
+  def get_integration(id) do
+    Integration
+    |> Repo.get(id)
+    |> Repo.normalize_one()
+  end
 
   @doc """
   Gets a single integration with for the given user_id and integration_id.

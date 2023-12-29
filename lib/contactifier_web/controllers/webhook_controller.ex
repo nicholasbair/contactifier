@@ -10,17 +10,17 @@ defmodule ContactifierWeb.WebhookController do
     # there is a hack to get this value but avoiding for simplicity
     # ref: https://github.com/phoenixframework/phoenix/issues/459#issuecomment-889050289
 
-  def receive_webhook(conn, %{"deltas" => [%{"type" => "contact.created", "object_data" => %{"id" => id, "account_id" => account_id}} | _tail]} = _params) do
-    with {:ok, _integration} <- Contactifier.Integrations.get_integration_by_vendor_id(account_id) do
-      %{"id" => id, "account_id" => account_id}
-      |> Contactifier.Contacts.Worker.new()
+  def receive_webhook(conn, %{"type" => type, "data" => %{"object" => %{"grant_id" => vendor_id}}} = params) when type in ["message.created", "message.created.truncated"] do
+    with {:ok, _integration} <- Contactifier.Integrations.get_integration_by_vendor_id(vendor_id) do
+      params
+      |> Contactifier.Messages.Worker.new()
       |> Oban.insert!()
     end
 
     send_resp(conn, 200, "")
   end
 
-  def receive_webhook(conn, %{"deltas" => [%{"type" => type, "object_data" => %{"id" => id}} | _tail]} = _params) when type in ["account.invalid", "account.stopped"] do
+  def receive_webhook(conn, %{"type" => "grant.expired", "object" => %{"grant_id" => id}} = _params) do
     # This is a fairly simple operation, so not using an async job
     with {:ok, integration} <- Contactifier.Integrations.get_integration_by_vendor_id(id) do
       Contactifier.Integrations.update_integration(integration, %{integration | valid?: false, invalid_since: DateTime.utc_now()})

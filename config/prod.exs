@@ -19,7 +19,7 @@ config :logger, level: :info
 
 config :contactifier,
   nylas_redirect_uri: "https://contactifier.fly.dev/integrations/callback",
-  nylas_api_server: "https://api.nylas.com"
+  nylas_api_server: "https://api.us.nylas.com"
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
