@@ -67,8 +67,8 @@ defmodule Contactifier.Messages.Worker do
     {:ok, %{id: _inbox_id}} = ContactProvider.get_inbox_folder(integration)
   end
 
-  def inbox_folder_circuit_breaker(error, %{integration: %{vendor_id: vendor_id}}, _attrs) do
-    Logger.error("Error processing message.created.truncated webhook: unable to fetch inbox folder for integration with vendor_id #{vendor_id} due to #{inspect(error)}")
+  def inbox_folder_circuit_breaker(error, %{integration: %{vendor_id: vendor_id}}, %{trigger: trigger}) do
+    Logger.error("Error processing #{trigger}: unable to fetch inbox folder for integration with vendor_id #{vendor_id} due to #{inspect(error)}")
     :abort
   end
 
@@ -76,8 +76,8 @@ defmodule Contactifier.Messages.Worker do
     {:ok, _integration} = Integrations.get_integration_by_vendor_id(id)
   end
 
-  def integration_circuit_breaker(:not_found, _effects_so_far, %{vendor_id: id}) do
-    Logger.error("Error processing message.created.truncated webhook: unable to fetch integration with vendor_id #{id}")
+  def integration_circuit_breaker(:not_found, _effects_so_far, %{vendor_id: id, trigger: trigger}) do
+    Logger.error("Error processing #{trigger}: unable to fetch integration with vendor_id #{id}")
     :abort
   end
 
@@ -86,8 +86,8 @@ defmodule Contactifier.Messages.Worker do
   end
 
   # TODO: handle 401 from API and mark integration as invalid
-  def message_circuit_breaker(error, _effects_so_far, %{vendor_id: vendor_id, message_id: id}) do
-    Logger.error("Error processing message.created.truncated webhook: unable to fetch message with id #{id} for integration with vendor_id #{vendor_id} due to #{inspect(error)}")
+  def message_circuit_breaker(error, _effects_so_far, %{vendor_id: vendor_id, message_id: id, trigger: trigger}) do
+    Logger.error("Error processing #{trigger}: unable to fetch message with id #{id} for integration with vendor_id #{vendor_id} due to #{inspect(error)}")
     :abort
   end
 
@@ -114,8 +114,8 @@ defmodule Contactifier.Messages.Worker do
     {:ok, _messages} = ContactProvider.get_messages(integration, %{received_after: DateTime.to_unix(integration.last_synced)})
   end
 
-  def messages_circuit_breaker(error, %{integration: %{vendor_id: vendor_id}}, _attrs) do
-    Logger.error("Error processing message.created.truncated webhook: unable to fetch messages for integration with vendor_id #{vendor_id} due to #{inspect(error)}")
+  def messages_circuit_breaker(error, %{integration: %{vendor_id: vendor_id}}, %{trigger: trigger}) do
+    Logger.error("Error processing #{trigger}: unable to fetch messages for integration with vendor_id #{vendor_id} due to #{inspect(error)}")
     :abort
   end
 
@@ -135,8 +135,8 @@ defmodule Contactifier.Messages.Worker do
     {:ok, _} = Integrations.update_integration(integration, %{last_synced: DateTime.utc_now(), historic_completed?: true})
   end
 
-  def set_integration_circuit_breaker(error, %{integration: %{vendor_id: vendor_id}}, _attrs) do
-    Logger.error("Error processing message.created.truncated webhook: unable to set last_synced for integration with vendor_id #{vendor_id} due to #{inspect(error)}")
+  def set_integration_circuit_breaker(error, %{integration: %{vendor_id: vendor_id}}, %{trigger: trigger}) do
+    Logger.error("Error processing #{trigger}: unable to set last_synced for integration with vendor_id #{vendor_id} due to #{inspect(error)}")
     :abort
   end
 
