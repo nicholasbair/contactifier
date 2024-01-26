@@ -14,11 +14,8 @@ defmodule Contactifier.Integrations.Worker do
   def perform(%{args: %{"task" => "check_stale_integrations"}}) do
     Logger.info("Checking for stale integrations")
 
-    with {:ok, integrations} <- Integrations.list_invalid_integrations() do
-      Enum.each(integrations, &check_integration/1)
-    else error ->
-      Logger.error("Error checking for stale integrations: #{inspect(error)}")
-    end
+    Integrations.list_invalid_integrations()
+    |> Enum.each(&check_integration/1)
 
     :ok
   end
@@ -37,11 +34,20 @@ defmodule Contactifier.Integrations.Worker do
   end
 
   def delete_provider_integration(_, integration) do
-    {:ok, _integration} = ContactProvider.delete_integration(integration.vendor_id)
+    case ContactProvider.delete_integration(integration.vendor_id) do
+      {:ok, _} ->
+        :ok
+
+      {:error, :not_found} ->
+        :ok
+
+      {:error, error} ->
+        {:error, error}
+    end
   end
 
   def delete_local_integration(_, integration) do
-    {:ok, _integration} = Integrations.delete_integration(integration.id)
+    Integrations.delete_integration(integration.id)
   end
 
   def delete_integration_circuit_breaker(error, _, integration) do
