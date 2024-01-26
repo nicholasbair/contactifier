@@ -34,24 +34,24 @@ defmodule Contactifier.Integrations.Worker do
   end
 
   def delete_provider_integration(_, integration) do
-    case ContactProvider.delete_integration(integration.vendor_id) do
-      {:ok, _} ->
-        :ok
-
-      {:error, :not_found} ->
-        :ok
-
-      {:error, error} ->
-        {:error, error}
-    end
+    integration
+    |> ContactProvider.delete_integration()
+    |> maybe_return_error()
   end
 
   def delete_local_integration(_, integration) do
-    Integrations.delete_integration(integration.id)
+    integration
+    |> Integrations.delete_integration()
+    |> maybe_return_error()
   end
 
   def delete_integration_circuit_breaker(error, _, integration) do
     Logger.error("Error deleting integration with id #{integration.id} due to #{inspect(error)}")
-    :abort
+    {:abort, error}
   end
+
+  defp maybe_return_error({:ok, _}), do: {:ok, nil}
+  defp maybe_return_error({:error, :not_found}), do: {:ok, nil}
+  defp maybe_return_error({:error, %{error: %{type: "grant.not_found"}}}), do: {:ok, nil}
+  defp maybe_return_error({:error, _error} = res), do: res
 end
