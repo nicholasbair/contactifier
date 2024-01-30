@@ -1,4 +1,14 @@
 defmodule Contactifier.Integrations.Worker do
+  @moduledoc """
+  Worker to check for stale integrations and delete them.
+
+  - The end user will need to periodically re-authenticate with the provider to continue using the integration.
+  - If the end user does not re-authenticate within a week of the integration being invalid, the integration will be considered stale and deleted.
+  - If the end user re-authenticates after the integration has been deleted, a new integration will be created.
+  - It is important to run this job as Nylas grants are billable even if they are invalid.
+  - Typically, an application would have a workflow, UI queues, etc, to notify the end user that they need to re-authenticate.
+  """
+
   require Logger
 
   alias Contactifier.Integrations
@@ -13,45 +23,50 @@ defmodule Contactifier.Integrations.Worker do
   @impl true
   def perform(%{args: %{"task" => "check_stale_integrations"}}) do
     Logger.info("Checking for stale integrations")
+    check_stale_integrations()
 
-    Integrations.list_invalid_integrations()
-    |> Enum.each(&check_integration/1)
-
+    # The job will only retry if an error is raised
     :ok
   end
 
-  def check_integration(integration) do
-    with true <- stale?(integration) do
-      Sage.new()
-      |> Sage.run(:delete_on_provider, &delete_provider_integration/2, &delete_integration_circuit_breaker/3)
-      |> Sage.run(:delete_on_db, &delete_local_integration/2, &delete_integration_circuit_breaker/3)
-      |> Sage.execute(integration)
-    end
+  def check_stale_integrations() do
+    Integrations.list_invalid_integrations()
+    |> Enum.filter(&stale?/1)
+    |> Enum.each(&check_integration/1)
   end
 
-  def stale?(integration) do
+  # -- Private --
+
+  defp stale?(integration) do
     DateTime.diff(DateTime.utc_now(), integration.invalid_since) > @one_week
   end
 
-  def delete_provider_integration(_, integration) do
+  defp check_integration(integration) do
+    integration
+    |> delete_provider_integration()
+    |> delete_local_integration(integration)
+  end
+
+  defp delete_provider_integration(integration) do
     integration
     |> ContactProvider.delete_integration()
     |> maybe_return_error()
   end
 
-  def delete_local_integration(_, integration) do
+  defp delete_local_integration(:ok, integration) do
     integration
     |> Integrations.delete_integration()
     |> maybe_return_error()
   end
 
-  def delete_integration_circuit_breaker(error, _, integration) do
-    Logger.error("Error deleting integration with id #{integration.id} due to #{inspect(error)}")
-    {:abort, error}
-  end
+  # Skip deleting the local integration there was an error deleting the provider integration
+  defp delete_local_integration(:skip, _integration), do: :ok
 
-  defp maybe_return_error({:ok, _}), do: {:ok, nil}
-  defp maybe_return_error({:error, :not_found}), do: {:ok, nil}
-  defp maybe_return_error({:error, %{error: %{type: "grant.not_found"}}}), do: {:ok, nil}
-  defp maybe_return_error({:error, _error} = res), do: res
+  defp maybe_return_error({:ok, _}), do: :ok
+  defp maybe_return_error({:error, %{status: :not_found}}), do: :ok
+  defp maybe_return_error({:error, :not_found}), do: :ok
+  defp maybe_return_error({:error, error}) do
+    Logger.error("Error deleting stale integration: #{inspect(error)}")
+    :skip
+  end
 end
