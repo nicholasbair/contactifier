@@ -3,8 +3,6 @@ defmodule Contactifier.Integrations.ContactProvider do
   Wrapper around ExNylas SDK to provide convenience functions for interacting with the Nylas API.
   """
 
-  import Contactifier.Util, only: [normalize_one: 1]
-
   @doc """
   Returns the auth URL for the Nylas integration.
 
@@ -38,7 +36,7 @@ defmodule Contactifier.Integrations.ContactProvider do
   """
   def exchange_code(code) do
     connection_with_client_creds()
-    |> ExNylas.Authentication.Hosted.exchange_code_for_token(
+    |> ExNylas.HostedAuthentication.exchange_code_for_token(
       code,
       Application.get_env(:contactifier, :nylas_redirect_uri)
     )
@@ -166,26 +164,4 @@ defmodule Contactifier.Integrations.ContactProvider do
     |> connection_with_token()
     |> ExNylas.Messages.all(query)
   end
-
-  @doc """
-  Get inbox folder for a given integration.
-
-  ## Examples
-
-      iex> get_inbox_folder(integration)
-      {:ok, %{data: [%{id: "1234"}]}}
-
-      iex> get_inbox_folder(integration)
-      {:error, reason}
-  """
-  def get_inbox_folder(integration) do
-    with {:ok, data} <- connection_with_token(integration) |> ExNylas.Folders.all() do
-      data
-      |> Enum.find(fn folder -> Enum.member?(["INBOX", "Inbox", "inbox"], folder.name) end)
-      |> normalize_one()
-    else
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
 end

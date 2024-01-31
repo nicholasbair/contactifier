@@ -29,7 +29,7 @@ defmodule ContactifierWeb.IntegrationController do
 
       # Nylas no longer does historic sync in API v3, so kick off our own historic sync
       if not integration.historic_completed? do
-        %{"task" => "historic_sync", "integration_id" => integration.id}
+        %{"task" => "historic_sync", "vendor_id" => integration.vendor_id}
         |> Worker.new()
         |> Oban.insert!()
       end

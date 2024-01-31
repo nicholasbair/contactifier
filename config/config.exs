@@ -41,7 +41,7 @@ config :contactifier, Oban,
         {"@daily", Contactifier.Messages.Worker, args: %{"task" => "start_incremental_sync"}}
      ]}
   ],
-  queues: [messages: 2, contacts: 2, integrations: 2]
+  queues: [messages: 2, contacts: 2, integrations: 1]
 
 # Configure esbuild (the version is required)
 config :esbuild,
