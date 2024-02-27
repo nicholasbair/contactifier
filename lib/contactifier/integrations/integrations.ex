@@ -166,8 +166,8 @@ defmodule Contactifier.Integrations do
       {:error, %Ecto.Changeset{}}
 
   """
-  def upsert_integration(attrs \\ %{}) do
-    case get_integration_by_vendor_id(attrs["vendor_id"]) do
+  def upsert_integration(%{vendor_id: vendor_id} = attrs) do
+    case get_integration_by_vendor_id(vendor_id) do
       {:error, :not_found} -> create_integration(attrs)
       {:ok, integration} -> update_integration(integration, attrs)
     end

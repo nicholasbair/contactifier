@@ -43,14 +43,16 @@ defmodule ContactifierWeb.IntegrationLive.Index do
 
   @impl true
   def handle_event("start_auth", %{"value" => provider}, socket) when provider in ["google", "microsoft"] do
-    {:ok, url} = Integrations.ContactProvider.auth_url(provider)
+    {:ok, proposal} = Integrations.Proposals.create_proposal(%{user_id: socket.assigns.current_user.id})
+    {:ok, url} = Integrations.ContactProvider.auth_url(provider, proposal.id)
     {:noreply, redirect(socket, external: url)}
   end
 
   @impl true
   def handle_event("start_reauth", %{"id" => id}, socket) do
     integration = Integrations.get_integration_for_user!(socket.assigns.current_user.id, id)
-    {:ok, url} = Integrations.ContactProvider.auth_url(integration.provider, integration.email_address)
+    {:ok, proposal} = Integrations.Proposals.create_proposal(%{user_id: socket.assigns.current_user.id})
+    {:ok, url} = Integrations.ContactProvider.auth_url(integration.provider, proposal.id, integration.email_address)
 
     {:noreply, redirect(socket, external: url)}
   end

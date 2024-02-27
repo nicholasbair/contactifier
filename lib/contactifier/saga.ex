@@ -82,6 +82,9 @@ defmodule Contactifier.Saga do
     end
   end
 
+  def finally(%{exit: true, final: final}), do: final
+  def finally(_saga), do: :ok
+
   defp unwrap({_, val}), do: val
   defp unwrap(val), do: val
 end

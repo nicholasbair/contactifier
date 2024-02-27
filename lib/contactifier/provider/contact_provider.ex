@@ -11,7 +11,7 @@ defmodule Contactifier.Integrations.ContactProvider do
       iex> auth_url()
       {:ok, "https://api.us.nylas.com/v3/connect/login?id=1234abcd"}
   """
-  def auth_url(provider, email \\ nil) do
+  def auth_url(provider, proposal_id, email \\ nil) do
     connection_with_client_creds()
     |> ExNylas.HostedAuthentication.get_auth_url(
       %{
@@ -19,6 +19,7 @@ defmodule Contactifier.Integrations.ContactProvider do
         login_hint: email,
         provider: provider,
         response_type: "code",
+        state: proposal_id,
       }
     )
   end
@@ -91,7 +92,8 @@ defmodule Contactifier.Integrations.ContactProvider do
     %ExNylas.Connection{
       api_server: Application.get_env(:contactifier, :nylas_api_server),
       client_id: Application.get_env(:contactifier, :nylas_client_id),
-      client_secret: Application.get_env(:contactifier, :nylas_client_secret),
+      client_secret: Application.get_env(:contactifier, :nylas_api_key),
+      telemetry: true,
     }
   end
 
@@ -112,6 +114,7 @@ defmodule Contactifier.Integrations.ContactProvider do
       api_server: Application.get_env(:contactifier, :nylas_api_server),
       grant_id: id,
       api_key: Application.get_env(:contactifier, :nylas_api_key),
+      telemetry: true,
     }
   end
 
