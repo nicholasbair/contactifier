@@ -11,7 +11,6 @@ defmodule Contactifier.Integrations.Proposals.Worker do
   def perform(%{args: %{"task" => "check_expired_proposals"}}) do
     Logger.info("Checking for expired proposals")
 
-    # TODO: this query doesn't work
     Proposals.list_expired_proposals()
     |> Enum.each(&Proposals.delete_proposal/1)
 
