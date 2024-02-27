@@ -12,7 +12,7 @@ defmodule Contactifier.Integrations.Integration do
     field :vendor_id, :string
     field :email_address, :string
     field :invalid_since, :utc_datetime
-    field :provider, :string
+    field :provider, Ecto.Enum, values: ~w(google microsoft)a
     field :last_synced, :utc_datetime
     field :historic_completed?, :boolean, default: false
 
