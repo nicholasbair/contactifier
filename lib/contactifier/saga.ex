@@ -82,6 +82,7 @@ defmodule Contactifier.Saga do
     end
   end
 
+
   def finally(%{exit: true, final: final}), do: final
   def finally(_saga), do: :ok
 
