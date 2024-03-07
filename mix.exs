@@ -39,9 +39,9 @@ defmodule Contactifier.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.18.16"},
+      {:phoenix_live_view, "~> 0.19"},
       {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_live_dashboard, "~> 0.7.2"},
+      {:phoenix_live_dashboard, "~> 0.8.0"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
@@ -51,8 +51,11 @@ defmodule Contactifier.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:ex_nylas, git: "https://github.com/nicholasbair/ex_nylas.git", tag: "v0.3.5"},
-      {:oban, "~> 2.15.2"}
+      {:ex_nylas, git: "https://github.com/nicholasbair/ex_nylas.git", branch: "more-paging"},
+      # {:ex_nylas, git: "https://github.com/nicholasbair/ex_nylas.git", tag: "v0.3.6"},
+      {:oban, "~> 2.15.2"},
+      {:broadway, "~> 1.0"},
+      {:broadway_dashboard, "~> 0.4.1"}
     ]
   end
 

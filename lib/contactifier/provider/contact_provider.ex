@@ -156,15 +156,20 @@ defmodule Contactifier.Integrations.ContactProvider do
 
   ## Examples
 
-      iex> get_messages(integration)
-      {:ok, [%{id: "1234"}]}
+      iex> get_all_messages(integration, &IO.inspect/1, %{limit: 10})
+      {:ok, []}
 
-      iex> get_messages()
+      iex> get_all_messages(integration, &IO.inspect/1, %{limit: 10})
       {:error, reason}
   """
-  def get_messages(integration, query \\ %{}) do
+  def get_all_messages(integration, send_to, query) do
     integration
     |> connection_with_token()
-    |> ExNylas.Messages.all(query)
+    |> ExNylas.Messages.all(
+      delay: 1000,
+      send_to: send_to,
+      with_metadata: integration,
+      query: query
+    )
   end
 end
