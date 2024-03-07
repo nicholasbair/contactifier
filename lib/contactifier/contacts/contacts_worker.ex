@@ -1,7 +1,4 @@
 defmodule Contactifier.Contacts.Worker do
-  require Logger
-
-  # import Contactifier.Worker.Util, only: [maybe_cancel_job: 1]
 
   alias Contactifier.{
     Contacts,

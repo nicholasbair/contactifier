@@ -150,6 +150,17 @@ defmodule Contactifier.Contacts do
     Contact.changeset(contact, attrs)
   end
 
+  @doc """
+  Bulk inserts contacts.
+
+  ## Examples
+
+      iex> bulk_insert_contacts([existing_emails])
+      {0, nil}
+
+      iex> bulk_insert_contacts([new_emails])
+      {num_of_inserted_contacts, nil}
+  """
   def bulk_insert_contacts(emails) when length(emails) == 0, do: {0, nil}
   def bulk_insert_contacts(emails) do
     timestamp =
