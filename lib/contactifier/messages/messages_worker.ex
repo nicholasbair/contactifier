@@ -68,12 +68,11 @@ defmodule Contactifier.Messages.Worker do
   # Transactions
   def fetch_integration(_effects_so_far, %{vendor_id: id}) do
     case Integrations.get_integration_by_vendor_id(id) do
+      {:ok, %{valid?: false}} ->
+        {:error, :integration_invalid}
+
       {:ok, integration} ->
-        if integration.valid? do
-          {:ok, integration}
-        else
-          {:error, :integration_invalid}
-        end
+        {:ok, integration}
 
       {:error, :not_found} ->
         {:error, :not_found}
