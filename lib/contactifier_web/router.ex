@@ -43,7 +43,10 @@ defmodule ContactifierWeb.Router do
     scope "/dev" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: ContactifierWeb.Telemetry
+      live_dashboard "/dashboard", metrics: ContactifierWeb.Telemetry,
+        additional_pages: [
+          broadway: {BroadwayDashboard, pipelines: [Contactifier.Pipeline.Consumer]}
+        ]
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end

@@ -22,5 +22,6 @@ defmodule Contactifier.Contacts.Contact do
     contact
     |> cast(attrs, [:email, :first_name, :last_name, :role, :customer_id, :vendor_id, :deleted?, :deleted_at])
     |> validate_required([:email])
+    |> unique_constraint(:email)
   end
 end

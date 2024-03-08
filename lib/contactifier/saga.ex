@@ -82,9 +82,10 @@ defmodule Contactifier.Saga do
     end
   end
 
-
   def finally(%{exit: true, final: final}), do: final
   def finally(_saga), do: :ok
+
+  def with_return(saga, name, default), do: Map.get(saga.effects, name, default)
 
   defp unwrap({_, val}), do: val
   defp unwrap(val), do: val

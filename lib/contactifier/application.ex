@@ -18,9 +18,8 @@ defmodule Contactifier.Application do
       {Finch, name: Contactifier.Finch},
       # Start the Endpoint (http/https)
       ContactifierWeb.Endpoint,
-      {Oban, Application.fetch_env!(:contactifier, Oban)}
-      # Start a worker by calling: Contactifier.Worker.start_link(arg)
-      # {Contactifier.Worker, arg}
+      {Oban, Application.fetch_env!(:contactifier, Oban)},
+      {Contactifier.Pipeline.Consumer, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

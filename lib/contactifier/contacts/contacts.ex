@@ -149,4 +149,38 @@ defmodule Contactifier.Contacts do
   def change_contact(%Contact{} = contact, attrs \\ %{}) do
     Contact.changeset(contact, attrs)
   end
+
+  @doc """
+  Bulk inserts contacts.
+
+  ## Examples
+
+      iex> bulk_insert_contacts([existing_emails])
+      {0, nil}
+
+      iex> bulk_insert_contacts([new_emails])
+      {num_of_inserted_contacts, nil}
+  """
+  def bulk_insert_contacts(emails) when length(emails) == 0, do: {0, nil}
+  def bulk_insert_contacts(emails) do
+    timestamp =
+      NaiveDateTime.utc_now()
+      |> NaiveDateTime.truncate(:second)
+
+    placeholders = %{timestamp: timestamp}
+
+    maps =
+      Enum.map(emails, &%{
+        email: &1,
+        inserted_at: {:placeholder, :timestamp},
+        updated_at: {:placeholder, :timestamp}
+      })
+
+    Repo.insert_all(
+      Contact,
+      maps,
+      placeholders: placeholders,
+      on_conflict: :nothing
+    )
+  end
 end
