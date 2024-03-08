@@ -162,7 +162,7 @@ defmodule Contactifier.Integrations.ContactProvider do
       iex> get_all_messages(integration, &IO.inspect/1, %{limit: 10})
       {:error, reason}
   """
-  def get_all_messages(integration, send_to, query) do
+  def get_all_messages(integration, send_to, query \\ %{}) do
     integration
     |> connection_with_token()
     |> ExNylas.Messages.all(
