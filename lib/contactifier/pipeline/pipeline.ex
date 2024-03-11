@@ -102,11 +102,11 @@ defmodule Contactifier.Pipeline do
     Message.put_data(message, %Transaction{raw: raw, integration: integration})
   end
 
-  def apply_output(output, message) do
+  # -- Private --
+
+  defp apply_output(output, message) do
     %Message{ message | data: Map.put(message.data, :output, output) }
   end
-
-  # -- Private --
 
   defp publish_to_messages_queue(message) do
     {:ok, chan} = AMQP.Application.get_channel(:messages)
