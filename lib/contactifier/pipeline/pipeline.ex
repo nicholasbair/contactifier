@@ -15,6 +15,7 @@ defmodule Contactifier.Pipeline do
 
   @processor_concurrency 5
   @max_demand 2
+  @queue "messages"
 
   def insert({integration, page}) when is_list(page) do
     page
@@ -25,8 +26,8 @@ defmodule Contactifier.Pipeline do
     end)
   end
 
-  def insert(event) do
-    %Transaction{raw: event}
+  def insert(message) do
+    %Transaction{raw: message}
     |> Jason.encode!()
     |> publish_to_messages_queue()
   end
@@ -36,12 +37,12 @@ defmodule Contactifier.Pipeline do
       name: __MODULE__,
       producer: [
         module: {BroadwayRabbitMQ.Producer,
-          queue: "messages",
+          queue: @queue,
           declare: [
             durable: true,
           ],
           qos: [
-            prefetch_count: 10,
+            prefetch_count: @processor_concurrency * @max_demand,
           ],
           on_failure: :reject_and_requeue_once,
         },
@@ -65,7 +66,7 @@ defmodule Contactifier.Pipeline do
   end
 
   # Message created and truncated webhooks
-  def handle_message(_, %{data: %{raw: raw, integration: integration}} = message, _) when is_nil(integration) do
+  def handle_message(_, %{data: %{raw: raw, integration: nil}} = message, _) do
     raw
     |> Worker.message_created_workflow()
     |> apply_output(message)
@@ -86,19 +87,19 @@ defmodule Contactifier.Pipeline do
       |> Enum.uniq()
       |> Contacts.bulk_insert_contacts()
 
-    Logger.info("Batcher inserted #{count} contacts")
+    Logger.info("Pipeline: batcher inserted #{count} contacts")
 
     messages
   end
 
   def handle_failed(messages, _context) do
-    Logger.error("Failed to process messages: #{inspect(messages)}")
+    Logger.error("Pipeline: failed to process messages: #{inspect(messages)}")
     messages
   end
 
-  def transform(event, _opts) do
-    %{"raw" => raw, "integration" => integration} = Jason.decode!(event.data)
-    Message.put_data(event, %Transaction{raw: raw, integration: integration})
+  def transform(message, _opts) do
+    %{"raw" => raw, "integration" => integration} = Jason.decode!(message.data)
+    Message.put_data(message, %Transaction{raw: raw, integration: integration})
   end
 
   def apply_output(output, message) do
@@ -107,8 +108,8 @@ defmodule Contactifier.Pipeline do
 
   # -- Private --
 
-  defp publish_to_messages_queue(event) do
+  defp publish_to_messages_queue(message) do
     {:ok, chan} = AMQP.Application.get_channel(:messages)
-    :ok = AMQP.Basic.publish(chan, "", "messages", event, persistent: false)
+    :ok = AMQP.Basic.publish(chan, "", @queue, message, persistent: false)
   end
 end
