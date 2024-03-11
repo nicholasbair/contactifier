@@ -19,7 +19,7 @@ defmodule Contactifier.Application do
       # Start the Endpoint (http/https)
       ContactifierWeb.Endpoint,
       {Oban, Application.fetch_env!(:contactifier, Oban)},
-      {Contactifier.Pipeline.Consumer, []}
+      {Contactifier.Pipeline, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

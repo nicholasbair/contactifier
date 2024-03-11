@@ -54,7 +54,9 @@ defmodule Contactifier.MixProject do
       {:ex_nylas, git: "https://github.com/nicholasbair/ex_nylas.git", tag: "v0.3.7"},
       {:oban, "~> 2.15.2"},
       {:broadway, "~> 1.0"},
-      {:broadway_dashboard, "~> 0.4.1"}
+      {:broadway_dashboard, "~> 0.4.1"},
+      {:broadway_rabbitmq, "~> 0.8.1"},
+      {:amqp, "~> 3.3"}
     ]
   end
 
