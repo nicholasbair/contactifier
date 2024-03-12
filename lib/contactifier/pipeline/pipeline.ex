@@ -19,8 +19,11 @@ defmodule Contactifier.Pipeline do
 
   def insert({integration, page}) when is_list(page) do
     page
-    |> Enum.each(fn p ->
-      %Transaction{raw: p, integration: integration}
+    |> Enum.each(fn message ->
+      message = Miss.Map.from_nested_struct(message)
+      integration = Miss.Map.from_nested_struct(integration, [{NaiveDateTime, :skip}])
+
+      %Transaction{raw: message, integration: integration}
       |> Jason.encode!()
       |> publish_to_messages_queue()
     end)
@@ -75,7 +78,7 @@ defmodule Contactifier.Pipeline do
   # Historic / Incremental sync
   def handle_message(_, %{data: %{raw: raw, integration: integration}} = message, _) do
     %{integration: integration, message: raw}
-    |> Worker.parse_emails_from_message(nil)
+    |> Worker.process_message_workflow()
     |> apply_output(message)
   end
 
