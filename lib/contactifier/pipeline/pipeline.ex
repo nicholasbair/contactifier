@@ -41,6 +41,11 @@ defmodule Contactifier.Pipeline do
       producer: [
         module: {BroadwayRabbitMQ.Producer,
           queue: @queue,
+          connection: [
+            username: Application.get_env(:contactifier, :rabbitmq_username),
+            password: Application.get_env(:contactifier, :rabbitmq_password),
+            host: Application.get_env(:contactifier, :rabbitmq_host),
+          ],
           declare: [
             durable: true,
           ],
