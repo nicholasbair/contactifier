@@ -44,14 +44,6 @@ config :contactifier, Oban,
   ],
   queues: [messages: 2, contacts: 1, integrations: 1, proposals: 1]
 
-config :amqp,
-  connections: [
-    messages: [url: "amqp://guest:guest@localhost:5672"],
-  ],
-  channels: [
-    messages: [connection: :messages]
-  ]
-
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
