@@ -30,6 +30,13 @@ defmodule Contactifier.Messages.Worker do
     |> Saga.with_return(:parse_emails, [])
   end
 
+  # Historic and incremental sync
+  def process_message_workflow(%{integration: integration, message: message}) do
+    Saga.new(%{integration: integration, message: message})
+    |> Saga.run(:parse_emails, &parse_emails_from_message/2)
+    |> Saga.with_return(:parse_emails, [])
+  end
+
   @impl Oban.Worker
   # Create a job for each valid integration to peform an incremental sync
   def perform(%Oban.Job{args: %{"task" => "start_incremental_sync"}}) do
@@ -107,6 +114,12 @@ defmodule Contactifier.Messages.Worker do
   # Message.created.truncated
   def parse_emails_from_message(%{integration: integration, message: message}, _attrs) do
     {:ok, get_emails(message, integration.email_address)}
+  end
+
+   # Historic and incremental sync
+  def parse_emails_from_message(_effects_so_far, %{integration: integration, message: message}) do
+    email_address = indifferent_get(integration, :email_address)
+    {:ok, get_emails(message, email_address)}
   end
 
   # Compensations
