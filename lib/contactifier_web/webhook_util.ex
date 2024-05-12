@@ -1,6 +1,6 @@
 defmodule ContactifierWeb.WebhookUtil do
   @moduledoc """
-  Functions to verify and transform Nylas webhook notifications.
+  Functions to verify Nylas webhook notifications.
   """
 
   require Logger
@@ -28,7 +28,7 @@ defmodule ContactifierWeb.WebhookUtil do
   # Insert raw body into conn.private so that it can be accessed later for verification
   # Borrowed this approach from: https://github.com/virtualq/ex_twilio_webhook
   def read_body(conn, opts) do
-    # Somewhat naive approach given the default size limit of 1MB here
+    # Somewhat naive approach given read_body could return {:more, partial_body, conn}
     {:ok, body, conn} = Plug.Conn.read_body(conn, opts)
 
     conn =
