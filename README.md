@@ -29,7 +29,7 @@ Imagine you are a user of a CRM/CSP tool.  When you have email interactions with
 * Clone the repo
 * CD into the directory
 * Make sure you have Postgres running
-* Set environment variables: `NYLAS_API_KEY_V3`, `NYLAS_CLIENT_ID_V3`, `NYLAS_CLIENT_SECRET_V3`
+* Set environment variables: `NYLAS_API_KEY_V3`, `NYLAS_CLIENT_ID_V3`, `NYLAS_CLIENT_SECRET_V3`, `NYLAS_WEBHOOK_SECRET`
 * Update the values for `nylas_redirect_uri`, `nylas_api_server` in `dev.exs` and `prod.exs`
 * Run `mix setup` to install and setup dependencies
 * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`

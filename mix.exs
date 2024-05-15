@@ -51,7 +51,7 @@ defmodule Contactifier.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:ex_nylas, git: "https://github.com/nicholasbair/ex_nylas.git", tag: "v0.3.7"},
+      {:ex_nylas, git: "https://github.com/nicholasbair/ex_nylas.git", tag: "v0.3.9"},
       {:oban, "~> 2.15.2"},
       {:broadway, "~> 1.0"},
       {:broadway_dashboard, "~> 0.4.1"},

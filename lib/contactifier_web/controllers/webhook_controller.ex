@@ -10,10 +10,7 @@ defmodule ContactifierWeb.WebhookController do
     text(conn, params["challenge"])
   end
 
-  # Note:
-    # Not verifying webhook signature, Phoenix doesn't expose the raw payload in the controller,
-    # there is a workaround to get this value but avoiding for simplicity
-    # ref: https://github.com/phoenixframework/phoenix/issues/459#issuecomment-889050289
+  # Note - webhooks are verified upstream in the pipeline, see webhook_util.ex
   def receive_webhook(conn, %{"type" => type} = params) when type in ["message.created", "message.created.truncated"] do
     Pipeline.insert(params)
     send_resp(conn, 200, "")

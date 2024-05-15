@@ -38,6 +38,12 @@ nylas_client_secret =
     environment variable NYLAS_CLIENT_SECRET_V3 is missing.
     """
 
+nylas_webhook_secret =
+  System.get_env("NYLAS_WEBHOOK_SECRET") ||
+    raise """
+    environment variable NYLAS_WEBHOOK_SECRET is missing.
+    """
+
 rabbitmq_username = System.get_env("RABBITMQ_USERNAME") || "guest"
 rabbitmq_password = System.get_env("RABBITMQ_PASSWORD") || "guest"
 rabbitmq_host = System.get_env("RABBITMQ_HOST") || "localhost"
@@ -46,6 +52,7 @@ config :contactifier,
   nylas_api_key: nylas_api_key,
   nylas_client_id: nylas_client_id,
   nylas_client_secret: nylas_client_secret,
+  nylas_webhook_secret: nylas_webhook_secret,
   rabbitmq_username: rabbitmq_username,
   rabbitmq_password: rabbitmq_password,
   rabbitmq_host: rabbitmq_host

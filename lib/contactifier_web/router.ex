@@ -2,6 +2,7 @@ defmodule ContactifierWeb.Router do
   use ContactifierWeb, :router
 
   import ContactifierWeb.UserAuth
+  import ContactifierWeb.WebhookUtil
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -25,7 +26,7 @@ defmodule ContactifierWeb.Router do
 
   # Other scopes may use custom stacks.
   scope "/api", ContactifierWeb do
-    pipe_through :api
+    pipe_through [:api, :verify_webhook]
 
     get "/webhooks", WebhookController, :challenge
     post "/webhooks", WebhookController, :receive_webhook
