@@ -12,16 +12,17 @@ defmodule ContactifierWeb.WebhookUtil do
     header = get_header(conn, "x-nylas-signature")
     body = conn.private.raw_body
 
-    case ExNylas.WebhookNotifications.valid_signature?(secret, body, header) do
-      true ->
+    case ExNylas.WebhookNotifications.valid_signature(secret, body, header) do
+      {:ok, true} ->
         conn
 
-      false ->
+      {:ok, false} ->
         Logger.error("Invalid Nylas webhook signature")
+        send_unauthorized(conn)
 
-        conn
-        |> send_resp(401, "Unauthorized")
-        |> halt()
+      {:error, message} ->
+        Logger.error("Error verifying Nylas webhook signature: #{message}")
+        send_unauthorized(conn)
     end
   end
 
@@ -43,5 +44,11 @@ defmodule ContactifierWeb.WebhookUtil do
     conn
     |> get_req_header(key)
     |> List.first()
+  end
+
+  defp send_unauthorized(conn) do
+    conn
+    |> send_resp(401, "Unauthorized")
+    |> halt()
   end
 end
