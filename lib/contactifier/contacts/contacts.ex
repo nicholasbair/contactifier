@@ -40,7 +40,11 @@ defmodule Contactifier.Contacts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_contact!(id), do: Repo.get!(Contact, id)
+  def get_contact!(id) do
+    Contact
+    |> Repo.get!(id)
+    |> Repo.preload(:customer)
+  end
 
   def get_contact(id) do
     Contact

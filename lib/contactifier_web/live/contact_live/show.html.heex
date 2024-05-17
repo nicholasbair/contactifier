@@ -9,10 +9,11 @@
 </.header>
 
 <.list>
-  <:item title="Email"><%= @contact.email %></:item>
   <:item title="First name"><%= @contact.first_name %></:item>
   <:item title="Last name"><%= @contact.last_name %></:item>
+  <:item title="Email"><%= @contact.email %></:item>
   <:item title="Role"><%= @contact.role %></:item>
+  <:item title="Company"><%= @contact.customer.name %></:item>
 </.list>
 
 <.back navigate={~p"/contacts"}>Back to contacts</.back>
