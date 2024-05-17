@@ -9,10 +9,10 @@ defmodule Contactifier.Contacts.Contact do
     field :first_name, :string
     field :last_name, :string
     field :role, :string
-    field :customer_id, :binary_id
     field :vendor_id, :string
     field :deleted?, :boolean, default: false
     field :deleted_at, :utc_datetime
+    belongs_to :customer, Contactifier.Customers.Customer
 
     timestamps()
   end
