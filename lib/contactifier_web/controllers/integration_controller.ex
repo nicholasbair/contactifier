@@ -45,7 +45,6 @@ defmodule ContactifierWeb.IntegrationController do
     |> Saga.run(:expired?, &proposal_expired?/2, &proposal_expired_circuit_breaker/3)
     |> Saga.run(:user_match?, &user_match?/2, &user_match_circuit_breaker/3)
     |> Saga.run(:exchange_code, &exchange_code/2, &exchange_code_circuit_breaker/3)
-    |> Saga.run(:fetch_grant, &fetch_grant/2, &fetch_grant_circuit_breaker/3)
     |> Saga.run(:upsert_integration, &upsert_integration/2, &upsert_integration_circuit_breaker/3)
     |> Saga.run(:delete_proposal, &delete_proposal/2, &delete_proposal_circuit_breaker/3)
     |> Saga.run(:historic_sync, &historic_sync/2, &historic_sync_circuit_breaker/3)
@@ -90,21 +89,14 @@ defmodule ContactifierWeb.IntegrationController do
     {:abort_with_error, "Error exchanging authentication code for token"}
   end
 
-  def fetch_grant(%{exchange_code: res} = _effects_so_far, _attrs), do: ContactProvider.get_grant(res.grant_id)
-
-  def fetch_grant_circuit_breaker(error, %{exchange_code: res, fetch_proposal: proposal} = _effects_so_far, _attrs) do
-    Logger.error("Error fetching grant with id #{res.grant_id} for proposal #{proposal.id}: #{inspect(error)}")
-    {:abort_with_error, "Error completing authentication process, please try again"}
-  end
-
-  def upsert_integration(%{fetch_grant: %{data: grant}} = _effects_so_far, %{user_id: user_id} = _attrs) do
+  def upsert_integration(%{exchange_code: grant} = _effects_so_far, %{user_id: user_id} = _attrs) do
     Integrations.upsert_integration(
       %{
         name: "Email Integration",
         description: "This integration has read access to your email.",
         valid?: true,
         user_id: user_id,
-        vendor_id: grant.id,
+        vendor_id: grant.grant_id,
         email_address: grant.email,
         invalid_since: nil,
         provider: grant.provider
@@ -112,8 +104,8 @@ defmodule ContactifierWeb.IntegrationController do
     )
   end
 
-  def upsert_integration_circuit_breaker(error, %{fetch_grant: %{data: grant}, fetch_proposal: proposal} = _effects_so_far, _attrs) do
-    Logger.error("Error upserting integration with vendor_id #{grant.id} for proposal #{proposal.id}: #{inspect(error)}")
+  def upsert_integration_circuit_breaker(error, %{exchange_code: grant, fetch_proposal: proposal} = _effects_so_far, _attrs) do
+    Logger.error("Error upserting integration with vendor_id #{grant.grant_id} for proposal #{proposal.id}: #{inspect(error)}")
     {:abort_with_error, "Error completing the authentication process, please try again"}
   end
 
