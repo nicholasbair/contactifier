@@ -5,7 +5,7 @@ defmodule Contactifier.MixProject do
     [
       app: :contactifier,
       version: "0.1.0",
-      elixir: "~> 1.14",
+      elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -51,7 +51,7 @@ defmodule Contactifier.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:ex_nylas, git: "https://github.com/nicholasbair/ex_nylas.git", tag: "v0.3.9"},
+      {:ex_nylas, git: "https://github.com/nicholasbair/ex_nylas.git", tag: "v0.5.0"},
       {:oban, "~> 2.15.2"},
       {:broadway, "~> 1.0"},
       {:broadway_dashboard, "~> 0.4.1"},

@@ -92,7 +92,7 @@ defmodule Contactifier.Integrations.ContactProvider do
     %ExNylas.Connection{
       api_server: Application.get_env(:contactifier, :nylas_api_server),
       client_id: Application.get_env(:contactifier, :nylas_client_id),
-      client_secret: Application.get_env(:contactifier, :nylas_api_key),
+      api_key: Application.get_env(:contactifier, :nylas_api_key),
       telemetry: true,
     }
   end
