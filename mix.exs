@@ -37,7 +37,7 @@ defmodule Contactifier.MixProject do
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 3.3"},
+      {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.19"},
       {:floki, ">= 0.30.0", only: :test},
@@ -51,12 +51,12 @@ defmodule Contactifier.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:ex_nylas, git: "https://github.com/nicholasbair/ex_nylas.git", tag: "v0.5.0"},
+      {:ex_nylas, "~> 0.10.0"},
       {:oban, "~> 2.15.2"},
       {:broadway, "~> 1.0"},
       {:broadway_dashboard, "~> 0.4.1"},
       {:broadway_rabbitmq, "~> 0.8.1"},
-      {:amqp, "~> 3.3"},
+      {:amqp, "~> 4.1"},
       {:miss, "~> 0.1.5"}
     ]
   end
