@@ -55,7 +55,7 @@ defmodule Contactifier.MixProject do
       {:oban, "~> 2.15.2"},
       {:broadway, "~> 1.0"},
       {:broadway_dashboard, "~> 0.4.1"},
-      {:broadway_rabbitmq, "~> 0.8.1"},
+      {:broadway_rabbitmq, "~> 0.8.2"},
       {:amqp, "~> 4.1"},
       {:miss, "~> 0.1.5"}
     ]

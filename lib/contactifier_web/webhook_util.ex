@@ -9,10 +9,10 @@ defmodule ContactifierWeb.WebhookUtil do
   def verify_webhook(%{method: "GET"} = conn, _opts), do: conn
   def verify_webhook(%{method: "POST"} = conn, _opts) do
     secret = Application.get_env(:contactifier, :nylas_webhook_secret)
-    header = get_header(conn, "x-nylas-signature")
+    signature = get_header(conn, "x-nylas-signature")
     body = conn.private.raw_body
 
-    case ExNylas.WebhookNotifications.valid_signature(secret, body, header) do
+    case ExNylas.WebhookNotifications.validate_signature(secret, body, signature) do
       {:ok, true} ->
         conn
 
